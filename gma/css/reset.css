@@ -1,0 +1,21 @@
+@charset "UTF-8";button,fieldset,img{border:0}
+a,a:active,a:hover{text-decoration:none}
+a:active,button{background-color:transparent}
+blockquote,body,button,code,dd,div,dl,dt,fieldset,form,h1,h2,h3,h4,h5,h6,input,legend,li,ol,p,pre,select,td,textarea,th,ul{margin:0;padding:0}
+/*dl,li,menu,ol,ul{list-style:none}*/
+blockquote,q{quotes:none}blockquote:after,blockquote:before,q:after,q:before{content:'';content:none}button,input,select,textarea{vertical-align:middle}input::-ms-clear{display:none}button{cursor:pointer}body,button,input,select,td,textarea,th{font-size:14px;line-height:1.5;font-family:'돋움',dotum,sans-serif;color:#666}.os_mac body,.os_mac button,.os_mac input,.os_mac select,.os_mac td,.os_mac textarea,.os_mac th{font-family:apple SD gothic neo,'돋움',dotum,sans-serif}a{color:#444}address,caption,cite,code,dfn,em,var{font-style:normal;font-weight:400}article,aside,figcaption,figure,figure img,footer,header,hgroup,nav,object,section,video{display:block}html{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.clearfix:after,.clearfixDiv{display:block;visibility:hidden;content:".";clear:both;text-indent:-9999px;height:0}
+*,
+html {
+       -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box;
+}
+*, *:before, *:after {
+      -webkit-box-sizing: inherit;
+     -moz-box-sizing: inherit;
+     box-sizing: inherit;
+}
+img{
+      vertical-align: top;
+}
+/*ul > li{list-style:none}*/
