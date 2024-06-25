@@ -494,17 +494,6 @@ var beforeOpenScrollPos = 0;
        context[98] = new AudioContext();
        console.log('context[98].state',context[98]);
        if (context[98].state !== 'running' && !isMobile) {
-             //PC이고 첫접속
-             console.log('pc이고 첫접속');
-             // $('#startlayer').show();
-      }else if (context[98].state !== 'running' && isMobile) {
-            //모바일이고 첫접속
-            console.log('모바일이고 첫접속');
-            // $('#startlayer').show();
-      }else{
-          console.log('그 외 첫접속');
-          if(!isMobile) bgmAlreadyLoaded = true;
-            // $htmlbody.removeClass('lock');
       }
 
       init();
