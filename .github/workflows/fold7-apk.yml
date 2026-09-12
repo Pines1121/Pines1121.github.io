@@ -97,7 +97,7 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p = Path('.ci/android-emulator-runner/lib/main.js')
+          p = Path('.ci/android-emulator-runner/lib/emulator-manager.js')
           code = p.read_text()
           old = 'shell input keyevent 82'
           assert code.count(old) == 1, 'Pinned runner unlock command changed'
