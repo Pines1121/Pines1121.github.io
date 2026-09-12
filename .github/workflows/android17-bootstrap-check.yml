@@ -17,6 +17,23 @@ jobs:
           path: device-tests
           run-id: '34679121495'
           github-token: ${{ github.token }}
+      - name: Resolve Android 17 preview system image
+        id: image
+        run: |
+          sdkmanager --list --channel=3 > sdk-packages.txt
+          python3 - <<'PY'
+          import os, re
+          paths=[line.split('|')[0].strip() for line in open('sdk-packages.txt')]
+          choices=[p for p in paths if re.fullmatch(r'system-images;android-(37|CinnamonBun);google_apis(_ps16k)?;x86_64',p)]
+          print('Android 17 candidates:',choices)
+          if not choices:
+              print('\n'.join(p for p in paths if 'system-images;android-' in p))
+              raise SystemExit('No Android 17 x86_64 system image available')
+          parts=sorted(set(choices),key=lambda p:('android-37;' not in p,'_ps16k' in p))[0].split(';')
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('level='+parts[1].removeprefix('android-')+'\n')
+              f.write('target='+parts[2]+'\n')
+          PY
       - name: Enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -24,9 +41,11 @@ jobs:
           sudo udevadm trigger --name-match=kvm
       - uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 37
+          api-level: 36
+          system-image-api-level: ${{ steps.image.outputs.level }}
+          channel: canary
           arch: x86_64
-          target: google_apis
+          target: ${{ steps.image.outputs.target }}
           disable-animations: true
           script: |
             adb unroot
@@ -38,5 +57,7 @@ jobs:
         if: always()
         with:
           name: android17-bootstrap-investigation
-          path: android17-bootstrap.log
+          path: |
+            android17-bootstrap.log
+            sdk-packages.txt
           if-no-files-found: ignore
