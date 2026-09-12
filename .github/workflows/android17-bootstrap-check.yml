@@ -1,0 +1,42 @@
+name: Android 17 bootstrap investigation
+on:
+  push:
+    branches: ['codex/fold7-shared-memory-fix']
+    paths: ['.github/workflows/android17-bootstrap-check.yml']
+permissions:
+  contents: read
+  actions: read
+jobs:
+  previous-build-on-android17:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: runtime-test-inputs
+          path: device-tests
+          run-id: '34679121495'
+          github-token: ${{ github.token }}
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 37
+          arch: x86_64
+          target: google_apis
+          disable-animations: true
+          script: |
+            adb unroot
+            adb wait-for-device
+            adb shell getprop ro.build.version.sdk
+            adb push device-tests/shell-runtime-smoke.dex /data/local/tmp/fold-runtime-smoke.dex
+            adb shell 'CLASSPATH=/data/local/tmp/fold-runtime-smoke.dex app_process /system/bin ShellRuntimeSmokeTest' > android17-bootstrap.log 2>&1; status=$?; cat android17-bootstrap.log; echo "Previous bootstrap exit code=$status"; exit "$status"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: android17-bootstrap-investigation
+          path: android17-bootstrap.log
+          if-no-files-found: ignore
