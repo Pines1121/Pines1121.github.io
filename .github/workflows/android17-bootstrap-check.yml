@@ -20,7 +20,7 @@ jobs:
       - name: Resolve Android 17 preview system image
         id: image
         run: |
-          sdkmanager --list --channel=3 > sdk-packages.txt
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --list --channel=3 > sdk-packages.txt
           python3 - <<'PY'
           import os, re
           paths=[line.split('|')[0].strip() for line in open('sdk-packages.txt')]
