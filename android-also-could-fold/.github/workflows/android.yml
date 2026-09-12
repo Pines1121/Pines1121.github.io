@@ -85,6 +85,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
+      - name: Check out the pinned emulator runner
+        uses: actions/checkout@v4
+        with:
+          repository: ReactiveCircus/android-emulator-runner
+          ref: a421e43855164a8197daf9d8d40fe71c6996bb0d
+          path: .ci/android-emulator-runner
+      - name: Avoid the runner's unnecessary boot-time input command
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('.ci/android-emulator-runner/lib/main.js')
+          code = p.read_text()
+          old = 'shell input keyevent 82'
+          assert code.count(old) == 1, 'Pinned runner unlock command changed'
+          # These tests query services and construct engines without UI input.
+          # Android 17's boot-time input command can fail before tests start.
+          # Keep boot/API/service checks and all app tests mandatory below.
+          p.write_text(code.replace(old, 'shell getprop sys.boot_completed'))
+          PY
       - uses: actions/download-artifact@v4
         with:
           name: runtime-test-inputs
@@ -94,7 +113,7 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - uses: reactivecircus/android-emulator-runner@v2
+      - uses: ./.ci/android-emulator-runner
         with:
           api-level: 36
           system-image-api-level: ${{ matrix.image }}
@@ -105,7 +124,7 @@ jobs:
           ram-size: 4096M
           heap-size: 512M
           pre-emulator-launch-script: adb start-server
-          disable-animations: true
+          disable-animations: false
           script: |
             adb unroot
             adb wait-for-device
