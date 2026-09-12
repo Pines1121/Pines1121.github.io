@@ -1,0 +1,52 @@
+name: Publish verified Fold7 APK
+on:
+  push:
+    branches: ['codex/fold7-shared-memory-fix']
+    paths: ['.github/workflows/publish-fold7-apk.yml']
+permissions:
+  contents: read
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      actions: read
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      BUILD_RUN: '34679121495'
+      BUILD_SHA: '6c81ca5d95d01cb8a78d2999ef38ff66dfb2d8e2'
+      RELEASE_TAG: 'fold7-fix-0.4.18-34679121495'
+    steps:
+      - name: Require the exact successful build and runtime tests
+        run: |
+          gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN" > run.json
+          test "$(jq -r .head_sha run.json)" = "$BUILD_SHA"
+          test "$(jq -r .conclusion run.json)" = success
+      - uses: actions/download-artifact@v4
+        with:
+          name: fold7-installable-apk
+          path: dist
+          run-id: '34679121495'
+          github-token: ${{ github.token }}
+      - name: Verify build checksums and publish direct APK download
+        run: |
+          cd dist
+          sha256sum -c SHA256SUMS.txt
+          cat > /tmp/fold7-release-notes.md <<'NOTES'
+          Fold Transition 0.4.18-fold7-fix for Galaxy Z Fold7 SM-F966N.
+
+          Addresses the reported ApplicationSharedMemory startup error by preparing the ADB shell framework before system context creation. V1/V2 effects and built-in local ADB pairing are preserved.
+
+          Verified in Actions run 34679121495: APK and test APK compilation, lint, engine tests, seven bootstrap host scenarios, Android 16 shell/app_process bootstrap and encrypted identity instrumentation. Physical Samsung Fold7 validation is pending.
+
+          Install: turn off the old effect, download the APK, and open it on the phone. This is a debug-signed development build. A signature mismatch may require uninstalling the old app, which removes its settings and pairing key. Keep Wi-Fi and wireless debugging enabled; pair again after a new installation. Shizuku is not required.
+
+          Source: https://github.com/Pines1121/Pines1121.github.io/tree/6c81ca5d95d01cb8a78d2999ef38ff66dfb2d8e2/android-also-could-fold
+          Build: https://github.com/Pines1121/Pines1121.github.io/actions/runs/34679121495
+          Upstream: https://github.com/keepYaoung/android-also-could-fold
+          NOTES
+          gh release create "$RELEASE_TAG" Fold-Transition-0.4.18-fold7-fix.apk SHA256SUMS.txt \
+            --target "$BUILD_SHA" --prerelease --title "Fold7 compatibility fix 0.4.18" \
+            --notes-file /tmp/fold7-release-notes.md

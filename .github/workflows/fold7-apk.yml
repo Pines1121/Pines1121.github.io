@@ -1,6 +1,8 @@
 name: Fold7 APK
 on:
   push:
+    paths:
+      - 'android-also-could-fold/**'
   pull_request:
   workflow_dispatch:
 permissions:
