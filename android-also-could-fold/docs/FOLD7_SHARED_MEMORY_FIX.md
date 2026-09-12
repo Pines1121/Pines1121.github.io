@@ -55,8 +55,10 @@ The next connection attempt clears the previous trace.
   missing service and non-shell rejection.
 - CI builds the debug APK and instrumentation APK, runs lint, verifies the APK
   signature and writes SHA-256 checksums.
-- The runtime matrix uses API 36, Android 17 `37.0` and Android 17 `37.2-beta3`
+- The runtime matrix uses API 36, Android 17 `37.2` and Android 17 `37.2-beta3`
   SDK system images. The compile/target SDK stays 36 to avoid unrelated behavior changes.
+  Earlier `37.0` images timed out during emulator boot, before any application test.
+  The matrix uses the newer available Android 17 image instead.
 - Each runtime job verifies the actual API level, runs the old KeyguardManager
   path separately and records whether it reproduces the shared-memory error.
 - The Android 17 test tries to enable the animator shared-memory feature flag

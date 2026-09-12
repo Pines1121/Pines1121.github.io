@@ -78,7 +78,7 @@ jobs:
           - image: '36'
             sdk: '36'
             target: google_apis
-          - image: '37.0'
+          - image: '37.2'
             sdk: '37'
             target: google_apis_ps16k
           - image: '37.2-beta3'
