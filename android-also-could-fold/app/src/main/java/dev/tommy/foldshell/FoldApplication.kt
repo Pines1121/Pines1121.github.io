@@ -19,6 +19,7 @@ class FoldApplication : Application() {
     val prefs by lazy { getSharedPreferences("fold", MODE_PRIVATE) }
     val main = Handler(Looper.getMainLooper())
     @Volatile var message = "최초 연결 설정이 필요합니다"; private set
+    @Volatile var diagnostic = ""; private set
     @Volatile var pairingPort = 0; private set
     @Volatile private var connectPort = 0
     @Volatile private var setupUntil = 0L
@@ -149,6 +150,7 @@ class FoldApplication : Application() {
             val apk = applicationInfo.sourceDir.replace("'", "'\\''")
             val command = "CLASSPATH='$apk' app_process /system/bin dev.tommy.foldshell.system.LocalFoldDaemon ${intensity / 100f} ${if (v2) "v2" else "v1"}"
             val current = manager.openStream("shell,raw:$command")
+            diagnostic = ""
             stream = current; ready = false; lastReply = now
             Thread({
                 try {
@@ -159,6 +161,14 @@ class FoldApplication : Application() {
                                 if (stream === current) {
                                     lastReply = SystemClock.elapsedRealtime()
                                     when {
+                                        line.startsWith("FOLD TRACE ") -> {
+                                            val encoded = line.removePrefix("FOLD TRACE ")
+                                            if (encoded.length <= 44000) {
+                                                diagnostic = try {
+                                                    String(java.util.Base64.getDecoder().decode(encoded), Charsets.UTF_8).take(8100)
+                                                } catch (_: IllegalArgumentException) { "진단 정보를 읽지 못했습니다" }
+                                            }
+                                        }
                                         line == "FOLD RUNNING" -> { ready = true; failures = 0; message = "실행 중 · 앱 자체 연결" }
                                         line.startsWith("FOLD ERROR") -> {
                                             engineError = line.removePrefix("FOLD ") + " · 끈 뒤 다시 켜서 재시도"

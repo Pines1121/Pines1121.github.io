@@ -30,7 +30,7 @@ public final class FoldShell implements SensorEventListener, DisplayManager.Disp
     private final SensorManager sensors;
     private final DisplayManager displays;
     private final PowerManager power;
-    private final android.app.KeyguardManager keyguard;
+    private final ShellKeyguard keyguard;
     private final Object displayGlobal;
     private final Method getDisplayInfo;
     private final Method effectLayer = SurfaceControl.Builder.class.getMethod("setEffectLayer");
@@ -74,7 +74,7 @@ public final class FoldShell implements SensorEventListener, DisplayManager.Disp
         sensors = context.getSystemService(SensorManager.class);
         displays = context.getSystemService(DisplayManager.class);
         power = context.getSystemService(PowerManager.class);
-        keyguard = context.getSystemService(android.app.KeyguardManager.class);
+        keyguard = new ShellKeyguard();
         Class<?> global = Class.forName("android.hardware.display.DisplayManagerGlobal");
         displayGlobal = global.getMethod("getInstance").invoke(null);
         getDisplayInfo = global.getMethod("getDisplayInfo", int.class);
@@ -305,7 +305,8 @@ public final class FoldShell implements SensorEventListener, DisplayManager.Disp
     }
     private void fail(Throwable error) {
         failed = true;
-        failureMessage = error.toString();
+        failureMessage = ShellRuntime.rootCause(error).toString();
+        if (!standalone) ShellRuntime.printDiagnostic(error);
         log("ERROR " + error); error.printStackTrace(System.out);
         close();
         // close() removes the expiry callback. A failed standalone loop must

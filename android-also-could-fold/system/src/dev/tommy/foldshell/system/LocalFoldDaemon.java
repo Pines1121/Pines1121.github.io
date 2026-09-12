@@ -26,6 +26,7 @@ public final class LocalFoldDaemon {
             FoldShell engine;
             try { engine = FoldShell.persistent(Float.parseFloat(args[0]), args.length > 1 && args[1].equals("v2")); }
             catch (Exception error) {
+                ShellRuntime.printDiagnostic(error);
                 System.out.println("FOLD ERROR " + ShellRuntime.rootCause(error));
                 error.printStackTrace(System.err);
                 return 1;

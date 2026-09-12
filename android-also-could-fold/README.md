@@ -2,11 +2,14 @@
 
 **English** | [한국어](README.ko.md)
 
-**Fold7 compatibility build: 0.4.18-fold7-fix.** The shell engine disables
-framework caches before context creation to address the reported
-`ApplicationSharedMemory not initialized` startup error. V1/V2 behavior and local
-ADB pairing are preserved. See [diagnosis, validation scope and installation](docs/FOLD7_SHARED_MEMORY_FIX.md).
-Physical SM-F966N validation is still required; an emulator cannot verify Samsung folding effects.
+**Fold7 Android 17 compatibility build: 0.4.19-fold7-android17.**
+The reported 0.4.18 failure on SM-F966N / Android 17 / One UI 9.0 beta is
+consistent with KeyguardManager initializing WindowManagerGlobal, which now reads
+ApplicationSharedMemory directly. The shell engine queries the real window service
+for lock state without that app-window initialization. V1/V2 and local ADB pairing
+are preserved. An **오류 상세 복사** button copies an error trace when available.
+See [diagnosis, validation scope and installation](docs/FOLD7_SHARED_MEMORY_FIX.md).
+Samsung physical validation is still required; AOSP CI cannot verify One UI folding effects.
 
 **Keep One UI. Make folding and unfolding feel smoother.**
 

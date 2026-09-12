@@ -1,8 +1,8 @@
 name: Fold7 APK
 on:
   push:
-    paths:
-      - 'android-also-could-fold/**'
+    branches: [codex/fold7-shared-memory-fix]
+    paths: ["android-also-could-fold/**", ".github/workflows/fold7-apk.yml"]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -38,12 +38,12 @@ jobs:
             -d build/smoke-classes system/tests/device/ShellRuntimeSmokeTest.java
           "$ANDROID_HOME/build-tools/36.0.0/d8" --min-api 31 \
             --lib "$ANDROID_HOME/platforms/android-36/android.jar" --output build/smoke-dex \
-            build/system-backend/classes/dev/tommy/foldshell/system/ShellRuntime.class \
+            build/system-backend/classes/dev/tommy/foldshell/system/*.class \
             build/smoke-classes/ShellRuntimeSmokeTest.class
       - name: Verify signature and prepare installable APK
         run: |
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/Fold-Transition-0.4.18-fold7-fix.apk
+          cp app/build/outputs/apk/debug/app-debug.apk dist/Fold-Transition-0.4.19-fold7-android17.apk
           "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs dist/*.apk
           cd dist
           sha256sum *.apk > SHA256SUMS.txt
@@ -71,6 +71,19 @@ jobs:
           if-no-files-found: ignore
   runtime-test:
     needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: '36'
+            sdk: '36'
+            target: google_apis
+          - image: '37.0'
+            sdk: '37'
+            target: google_apis
+          - image: '37.2-beta3'
+            sdk: '37'
+            target: google_apis_ps16k
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -86,15 +99,21 @@ jobs:
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 36
+          system-image-api-level: ${{ matrix.image }}
+          channel: canary
           arch: x86_64
-          target: google_apis
+          target: ${{ matrix.target }}
           disable-animations: true
           script: |
             adb unroot
             adb wait-for-device
+            adb shell getprop ro.build.version.release
+            adb shell getprop ro.build.version.sdk | tr -d '\r' | tee runtime-api.log
+            test "$(cat runtime-api.log)" = "${{ matrix.sdk }}"
             adb push device-tests/shell-runtime-smoke.dex /data/local/tmp/fold-runtime-smoke.dex
+            adb shell 'CLASSPATH=/data/local/tmp/fold-runtime-smoke.dex app_process /system/bin ShellRuntimeSmokeTest legacy-keyguard' | tee legacy-keyguard.log
             adb shell 'CLASSPATH=/data/local/tmp/fold-runtime-smoke.dex app_process /system/bin ShellRuntimeSmokeTest' | tee bootstrap-smoke.log
-            grep -q 'ShellRuntimeSmokeTest PASS' bootstrap-smoke.log
+            grep -q 'ShellRuntimeSmokeTest PASS sdk=${{ matrix.sdk }} .*modes=V1,V2' bootstrap-smoke.log
             adb install -r device-tests/app-debug.apk
             adb install -r device-tests/app-debug-androidTest.apk
             adb shell am instrument -w -r dev.tommy.foldshell.test/androidx.test.runner.AndroidJUnitRunner | tee instrumentation.log
@@ -102,8 +121,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: runtime-test-logs
+          name: runtime-test-logs-${{ matrix.image }}
           path: |
+            runtime-api.log
+            legacy-keyguard.log
             bootstrap-smoke.log
             instrumentation.log
           if-no-files-found: ignore

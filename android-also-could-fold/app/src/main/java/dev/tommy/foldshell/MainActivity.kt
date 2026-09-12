@@ -17,11 +17,13 @@ class MainActivity : Activity() {
     private val app get() = application as FoldApplication
     private lateinit var status: TextView
     private lateinit var toggle: Button
+    private lateinit var copyError: Button
     private var afterPermission: (() -> Unit)? = null
     private val refresh = object : Runnable {
         override fun run() {
             status.text = app.message
             toggle.text = if (app.enabled) "효과 끄기" else "효과 켜기"
+            copyError.visibility = if (app.diagnostic.isEmpty()) android.view.View.GONE else android.view.View.VISIBLE
             app.main.postDelayed(this, 1000)
         }
     }
@@ -43,6 +45,12 @@ class MainActivity : Activity() {
         label("Fold Transition", 30f).typeface = Typeface.DEFAULT_BOLD
         label("One UI 그대로, 접고 펼치는 순간만 부드럽게.")
         status = label(app.message, 18f)
+        copyError = button("오류 상세 복사") {
+            val details = "Fold Transition ${BuildConfig.VERSION_NAME}\n${Build.MODEL} · Android ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})\n${app.message}\n\n${app.diagnostic}"
+            getSystemService(android.content.ClipboardManager::class.java)
+                .setPrimaryClip(android.content.ClipData.newPlainText("Fold Transition 오류", details))
+            Toast.makeText(this, "오류 내용을 복사했습니다", Toast.LENGTH_SHORT).show()
+        }.apply { visibility = android.view.View.GONE }
         toggle = button(if (app.enabled) "효과 끄기" else "효과 켜기") {
             if (app.enabled) app.setEnabled(false)
             else if (!app.paired) beginSetup()

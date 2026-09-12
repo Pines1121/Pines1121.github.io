@@ -33,9 +33,10 @@ def build():
     # Host-only framework fixtures must never enter the APK or standalone DEX.
     bootstrap = OUT / 'bootstrap-tests'
     bootstrap.mkdir(parents=True, exist_ok=True)
-    run([JDK / 'bin/javac', '-d', bootstrap, source / 'ShellRuntime.java',
+    run([JDK / 'bin/javac', '-d', bootstrap, source / 'ShellRuntime.java', source / 'ShellKeyguard.java',
          *(ROOT / 'system/tests/bootstrap').rglob('*.java')])
     run([JDK / 'bin/java', '-cp', bootstrap, 'ShellRuntimeTest'])
+    run([JDK / 'bin/java', '-cp', bootstrap, 'ShellKeyguardTest'])
     env = dict(os.environ, JAVA_HOME=str(JDK))
     run([SDK / 'build-tools/36.0.0/d8', '--min-api', '31', '--lib', android,
          '--output', dex, *classes.glob('dev/**/*.class')], env=env)

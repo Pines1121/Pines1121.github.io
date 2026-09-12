@@ -33,4 +33,14 @@ public final class ShellRuntime {
         while (error.getCause() != null && error.getCause() != error) error = error.getCause();
         return error;
     }
+
+    static void printDiagnostic(Throwable error) {
+        java.io.StringWriter trace = new java.io.StringWriter();
+        error.printStackTrace(new java.io.PrintWriter(trace));
+        String text = trace.toString();
+        if (text.length() > 8000) text = text.substring(0, 8000) + "\n[truncated]";
+        // Send before FOLD ERROR: the app closes the ADB stream on that line.
+        System.out.println("FOLD TRACE " + java.util.Base64.getEncoder().encodeToString(
+                text.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+    }
 }
