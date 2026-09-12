@@ -24,12 +24,12 @@ jobs:
           python3 - <<'PY'
           import os, re
           paths=[line.split('|')[0].strip() for line in open('sdk-packages.txt')]
-          choices=[p for p in paths if re.fullmatch(r'system-images;android-(37|CinnamonBun);google_apis(_ps16k)?;x86_64',p)]
+          choices=[p for p in paths if re.fullmatch(r'system-images;android-(37(?:\\.\\d+(?:-beta\\d+)?)?|CinnamonBun);google_apis(_ps16k)?;x86_64',p)]
           print('Android 17 candidates:',choices)
           if not choices:
               print('\n'.join(p for p in paths if 'system-images;android-' in p))
               raise SystemExit('No Android 17 x86_64 system image available')
-          parts=sorted(set(choices),key=lambda p:('android-37;' not in p,'_ps16k' in p))[0].split(';')
+          parts=sorted(set(choices),key=lambda p:('android-37.0;' not in p,'_ps16k' in p))[0].split(';')
           with open(os.environ['GITHUB_OUTPUT'],'a') as f:
               f.write('level='+parts[1].removeprefix('android-')+'\n')
               f.write('target='+parts[2]+'\n')
