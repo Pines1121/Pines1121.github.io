@@ -35,7 +35,18 @@ public final class ShellRuntimeSmokeTest {
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
+        try {
+            run(args);
+        } catch (Throwable error) {
+            // app_process's uncaught handler otherwise logs only to logcat and
+            // kills the process, hiding the framework cause from the CI output.
+            error.printStackTrace(System.out);
+            System.exit(1);
+        }
+    }
+
+    private static void run(String[] args) throws Exception {
         Looper.prepareMainLooper();
         exerciseSharedMemoryFlag();
         Context first = ShellRuntime.createContext();

@@ -134,6 +134,7 @@ jobs:
             adb push device-tests/shell-runtime-smoke.dex /data/local/tmp/fold-runtime-smoke.dex
             adb shell 'CLASSPATH=/data/local/tmp/fold-runtime-smoke.dex app_process /system/bin ShellRuntimeSmokeTest legacy-keyguard' | tee legacy-keyguard.log
             adb shell 'CLASSPATH=/data/local/tmp/fold-runtime-smoke.dex app_process /system/bin ShellRuntimeSmokeTest' | tee bootstrap-smoke.log
+            adb logcat -b crash -d -t 200 > framework-crash.log
             grep -q 'ShellRuntimeSmokeTest PASS sdk=${{ matrix.sdk }} .*modes=V1,V2' bootstrap-smoke.log
             adb install -r device-tests/app-debug.apk
             adb install -r device-tests/app-debug-androidTest.apk
@@ -148,4 +149,5 @@ jobs:
             legacy-keyguard.log
             bootstrap-smoke.log
             instrumentation.log
+            framework-crash.log
           if-no-files-found: ignore
