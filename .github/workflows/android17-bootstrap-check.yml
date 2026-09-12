@@ -24,7 +24,7 @@ jobs:
           python3 - <<'PY'
           import os, re
           paths=[line.split('|')[0].strip() for line in open('sdk-packages.txt')]
-          choices=[p for p in paths if re.fullmatch(r'system-images;android-(37(?:\\.\\d+(?:-beta\\d+)?)?|CinnamonBun);google_apis(_ps16k)?;x86_64',p)]
+          choices=[p for p in paths if p == 'system-images;android-37.0;google_apis;x86_64']
           print('Android 17 candidates:',choices)
           if not choices:
               print('\n'.join(p for p in paths if 'system-images;android-' in p))
