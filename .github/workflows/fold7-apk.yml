@@ -80,7 +80,7 @@ jobs:
             target: google_apis
           - image: '37.0'
             sdk: '37'
-            target: google_apis
+            target: google_apis_ps16k
           - image: '37.2-beta3'
             sdk: '37'
             target: google_apis_ps16k

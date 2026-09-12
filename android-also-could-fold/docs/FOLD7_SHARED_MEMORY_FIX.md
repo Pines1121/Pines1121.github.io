@@ -59,6 +59,10 @@ The next connection attempt clears the previous trace.
   SDK system images. The compile/target SDK stays 36 to avoid unrelated behavior changes.
 - Each runtime job verifies the actual API level, runs the old KeyguardManager
   path separately and records whether it reproduces the shared-memory error.
+- The Android 17 test tries to enable the animator shared-memory feature flag
+  only inside its disposable shell process, recording the result or any immutable
+  flag limitation. Device settings and system services are not modified. This
+  test helper is excluded from the installable APK and production engine DEX.
 - The fixed-path test uses shell UID via `app_process`, queries the real lock
   state and constructs both production V1/V2 engines, including hidden display
   and compositor method resolution. It reads display info and closes both engines.

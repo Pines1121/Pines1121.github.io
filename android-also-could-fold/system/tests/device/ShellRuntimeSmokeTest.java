@@ -10,8 +10,34 @@ import dev.tommy.foldshell.system.FoldShell;
 
 /** Runs as shell; constructs both engine modes but never starts effects or captures. */
 public final class ShellRuntimeSmokeTest {
+    private static void exerciseSharedMemoryFlag() throws Exception {
+        if (android.os.Build.VERSION.SDK_INT < 37) return;
+        try {
+            Class<?> flags = Class.forName("com.android.window.flags.Flags");
+            java.lang.reflect.Method getter = flags.getMethod("currentAnimatorScaleUsesSharedMemory");
+            System.out.println("Animator shared-memory flag before test=" + getter.invoke(null));
+            // Test process only. Simulate a vendor enabling this framework path;
+            // never change device_config, system_server or any phone setting.
+            java.lang.reflect.Field field = flags.getDeclaredField("FEATURE_FLAGS");
+            field.setAccessible(true);
+            Object original = field.get(null);
+            Class<?> contract = field.getType();
+            Object enabled = java.lang.reflect.Proxy.newProxyInstance(contract.getClassLoader(),
+                    new Class<?>[] { contract }, (proxy, method, values) ->
+                            method.getName().equals("currentAnimatorScaleUsesSharedMemory")
+                                    ? true : method.invoke(original, values));
+            field.set(null, enabled);
+            System.out.println("Animator shared-memory flag in test=" + getter.invoke(null));
+        } catch (ReflectiveOperationException | IllegalArgumentException error) {
+            // Optimized framework builds may make flags immutable. Record that
+            // limitation explicitly instead of claiming the path was exercised.
+            System.out.println("Framework flag cannot be overridden in this test: " + error);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         Looper.prepareMainLooper();
+        exerciseSharedMemoryFlag();
         Context first = ShellRuntime.createContext();
         if (args.length > 0 && args[0].equals("legacy-keyguard")) {
             // Separate process: demonstrate the path omitted by the 0.4.18 test.
