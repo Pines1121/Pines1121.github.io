@@ -55,10 +55,19 @@ The next connection attempt clears the previous trace.
   missing service and non-shell rejection.
 - CI builds the debug APK and instrumentation APK, runs lint, verifies the APK
   signature and writes SHA-256 checksums.
-- The runtime matrix uses API 36, Android 17 `37.2` and Android 17 `37.2-beta3`
-  SDK system images. The compile/target SDK stays 36 to avoid unrelated behavior changes.
-  Earlier `37.0` images timed out during emulator boot, before any application test.
-  The matrix uses the newer available Android 17 image instead.
+- The default runtime matrix uses API 36 and Android 17 `37.2-beta3` SDK system
+  images, matching the reported beta platform. Both pass the checks below.
+  The compile/target SDK stays 36 to avoid unrelated behavior changes.
+  Stable `37.2` remains selectable using the manual workflow input; its tests
+  remain mandatory when selected, with no ignored failures.
+- Additional stable-image testing was blocked by an emulator graphics failure.
+  In [run 34683061116](https://github.com/Pines1121/Pines1121.github.io/actions/runs/34683061116),
+  the API 36 and Android 17 beta jobs passed, while the stable image's
+  SurfaceFlinger repeatedly aborted in `mapper.ranchu.so` with
+  `Assertion failed: !rcEnc->featureInfo()->hasReadColorBufferDma` before app tests.
+  The resulting dead system service caused bootstrap failure. This is recorded
+  as an infrastructure limitation, not a passing stable Android 17 app test.
+  Earlier `37.0` images also timed out during emulator boot.
 - Each runtime job verifies the actual API level, runs the old KeyguardManager
   path separately and records whether it reproduces the shared-memory error.
 - The Android 17 test tries to enable the animator shared-memory feature flag

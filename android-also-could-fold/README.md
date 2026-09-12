@@ -10,6 +10,8 @@ for lock state without that app-window initialization. V1/V2 and local ADB pairi
 are preserved. An **오류 상세 복사** button copies an error trace when available.
 See [diagnosis, validation scope and installation](docs/FOLD7_SHARED_MEMORY_FIX.md).
 Samsung physical validation is still required; AOSP CI cannot verify One UI folding effects.
+CI verifies Android 16 and Android 17 beta. The additional stable Android 17
+emulator currently crashes in its graphics system before app tests; see the linked report.
 
 **Keep One UI. Make folding and unfolding feel smoother.**
 

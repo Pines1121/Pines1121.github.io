@@ -3,6 +3,14 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      android17_image:
+        description: Android 17 image (37.2 stable currently has an emulator graphics crash)
+        type: choice
+        default: '37.2-beta3'
+        options:
+          - '37.2-beta3'
+          - '37.2'
 permissions:
   contents: read
 env:
@@ -76,10 +84,10 @@ jobs:
           - image: '36'
             sdk: '36'
             target: google_apis
-          - image: '37.2'
-            sdk: '37'
-            target: google_apis_ps16k
-          - image: '37.2-beta3'
+          # The reported phone runs Android 17 / One UI 9.0 beta.
+          # Stable 37.2 is selectable for diagnosis; its current emulator
+          # crashes in SurfaceFlinger before app tests (see compatibility doc).
+          - image: ${{ inputs.android17_image || '37.2-beta3' }}
             sdk: '37'
             target: google_apis_ps16k
     runs-on: ubuntu-latest
