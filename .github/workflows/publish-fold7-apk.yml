@@ -16,38 +16,42 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
       RELEASE_COMMIT: ${{ github.sha }}
-      BUILD_RUN: '34679121495'
-      BUILD_SHA: '6c81ca5d95d01cb8a78d2999ef38ff66dfb2d8e2'
-      RELEASE_TAG: 'fold7-fix-0.4.18-34679121495'
+      BUILD_RUN: '34684041875'
+      BUILD_SHA: '5643c1837aab2319eb21ca9ad2c0222293ba6bc4'
+      RELEASE_TAG: 'fold7-android17-0.4.19-34684041875'
     steps:
       - name: Require the exact successful build and runtime tests
         run: |
           gh api "repos/$GH_REPO/actions/runs/$BUILD_RUN" > run.json
           test "$(jq -r .head_sha run.json)" = "$BUILD_SHA"
           test "$(jq -r .conclusion run.json)" = success
+          test "$(jq -r .event run.json)" = push
+          test "$(jq -r .head_branch run.json)" = codex/fold7-shared-memory-fix
       - uses: actions/download-artifact@v4
         with:
           name: fold7-installable-apk
           path: dist
-          run-id: '34679121495'
+          run-id: '34684041875'
           github-token: ${{ github.token }}
       - name: Verify build checksums and publish direct APK download
         run: |
           cd dist
           sha256sum -c SHA256SUMS.txt
           cat > /tmp/fold7-release-notes.md <<'NOTES'
-          Fold Transition 0.4.18-fold7-fix for Galaxy Z Fold7 SM-F966N.
+          Fold Transition 0.4.19-fold7-android17 for Galaxy Z Fold7 SM-F966N.
 
-          Addresses the reported ApplicationSharedMemory startup error by preparing the ADB shell framework before system context creation. V1/V2 effects and built-in local ADB pairing are preserved.
+          Updates the 0.4.18 candidate for the reported SM-F966N / Android 17 / One UI 9.0 beta error. Reads the real keyguard state through IWindowManager without the KeyguardManager constructor and its app shared-memory animator initialization. V1/V2 effects, capture protection and built-in local ADB pairing are preserved. A manual error-details copy button is available.
 
-          Verified in Actions run 34679121495: APK and test APK compilation, lint, engine tests, seven bootstrap host scenarios, Android 16 shell/app_process bootstrap and encrypted identity instrumentation. Physical Samsung Fold7 validation is pending.
+          Verified in Actions run 34684041875: APK/test APK compilation, lint (0 errors), motion regression tests, seven bootstrap and five keyguard host-model scenarios. Android 16 (API 36) and Android 17 beta (37.2-beta3 / API 37) run the production bootstrap and both V1/V2 engine constructors, query services, install the APK and pass the encrypted identity instrumentation test. The original exception was not reproduced on the available AOSP beta image; the AOSP animator feature-flag class was unavailable for a process-local test override. The change targets the Android 17 source path, and physical Samsung Fold7 effects and wireless pairing remain unverified.
+
+          Additional stable Android 17 emulator verification was blocked by repeated SurfaceFlinger/mapper.ranchu graphics crashes before app testing (assertion: !rcEnc->featureInfo()->hasReadColorBufferDma). It is not counted as a passing app test. The failed infrastructure logs remain in Actions run 34683061116, and the stable image can be selected manually for diagnosis.
 
           Install: turn off the old effect, download the APK, and open it on the phone. This is a debug-signed development build. A signature mismatch may require uninstalling the old app, which removes its settings and pairing key. Keep Wi-Fi and wireless debugging enabled; pair again after a new installation. Shizuku is not required.
 
-          Source: https://github.com/Pines1121/Pines1121.github.io/tree/6c81ca5d95d01cb8a78d2999ef38ff66dfb2d8e2/android-also-could-fold
-          Build: https://github.com/Pines1121/Pines1121.github.io/actions/runs/34679121495
+          Source: https://github.com/Pines1121/Pines1121.github.io/tree/5643c1837aab2319eb21ca9ad2c0222293ba6bc4/android-also-could-fold
+          Build: https://github.com/Pines1121/Pines1121.github.io/actions/runs/34684041875
           Upstream: https://github.com/keepYaoung/android-also-could-fold
           NOTES
-          gh release create "$RELEASE_TAG" Fold-Transition-0.4.18-fold7-fix.apk SHA256SUMS.txt \
-            --target "$RELEASE_COMMIT" --prerelease --title "Fold7 compatibility fix 0.4.18" \
+          gh release create "$RELEASE_TAG" Fold-Transition-0.4.19-fold7-android17.apk SHA256SUMS.txt \
+            --target "$RELEASE_COMMIT" --prerelease --title "Fold7 Android 17 compatibility 0.4.19" \
             --notes-file /tmp/fold7-release-notes.md
