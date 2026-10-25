@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+  <title>RELEASE v1.0.0 — 윤성현 ❤️ 허율</title>
+  <meta name="description" content="marriage v1.0.0 — production 배포 완료" />
+  <meta name="robots" content="noindex" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/developer.css?v=74c7a31c" />
+
+  <style>
+    /* 403 잠금 화면 */
+    #locked {
+      display: none;
+      min-height: calc(100dvh - 60px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 40px 24px;
+      text-align: center;
+      font-family: var(--mono);
+    }
+
+    #locked .code {
+      font-size: 72px;
+      font-weight: 700;
+      color: var(--red);
+      letter-spacing: 0.05em;
+    }
+
+    #locked .reason {
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    #locked .detail {
+      font-size: 13px;
+      line-height: 2;
+      color: var(--text-dim);
+    }
+
+    #locked .countdown {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--amber);
+    }
+
+    #locked .back {
+      margin-top: 26px;
+      padding: 13px 22px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 13.5px;
+      color: var(--text-dim);
+      text-decoration: none;
+      transition: border-color 0.25s, color 0.25s;
+    }
+
+    #locked .back:hover {
+      border-color: var(--mint);
+      color: var(--mint);
+    }
+
+    /* release 노트 화면 */
+    #released {
+      display: none;
+    }
+
+    .release-head {
+      padding: 64px 24px 20px;
+      text-align: center;
+    }
+
+    .release-head .tag-badge {
+      display: inline-block;
+      padding: 6px 16px;
+      border: 1px solid color-mix(in srgb, var(--green) 45%, transparent);
+      border-radius: 99px;
+      background: color-mix(in srgb, var(--green) 8%, transparent);
+      font-family: var(--mono);
+      font-size: 13.5px;
+      letter-spacing: 0.12em;
+      color: var(--green);
+    }
+
+    .release-head h1 {
+      margin-top: 22px;
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 32px;
+      letter-spacing: 0.05em;
+      color: var(--text-bright);
+    }
+
+    .release-head .sub {
+      margin-top: 10px;
+      font-family: var(--mono);
+      font-size: 13.5px;
+      color: var(--text-dim);
+    }
+
+    /* systemctl 상태 block */
+    .unit-status .dot {
+      color: var(--green);
+    }
+
+    .unit-status .uptime {
+      color: var(--mint);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* CHANGELOG */
+    .changelog .ver-line {
+      color: var(--text-bright);
+      font-weight: 500;
+    }
+
+    .changelog .add  { color: var(--green); }
+    .changelog .brk  { color: var(--red); }
+    .changelog .dep  { color: var(--comment); text-decoration: line-through; }
+
+    /* 감사 인사 */
+    .thanks {
+      font-family: var(--serif);
+      font-size: 19px;
+      line-height: 2.2;
+      text-align: center;
+      word-break: keep-all;
+      color: var(--text);
+    }
+
+    .thanks .names {
+      margin-top: 26px;
+      font-size: 16px;
+      color: var(--text-dim);
+    }
+  </style>
+</head>
+
+<body>
+<div class="phone">
+
+  <!-- editor 상단바 -->
+  <header class="editor-bar">
+    <div class="dots"><i></i><i></i><i></i></div>
+    <div class="tab"><b>sunghyun</b> ♥ <em>yul</em><span class="fname"> — RELEASE.md</span></div>
+    <a class="theme-toggle" href="main.html" title="청첩장으로 돌아가기" style="text-decoration: none;">←</a>
+  </header>
+
+
+  <!-- 잠금 화면 (예식 전) -->
+  <div id="locked">
+    <div class="code">403</div>
+    <div class="reason">Forbidden — release not yet published</div>
+    <div class="detail">
+      이 페이지는 2027년 9월 25일 토요일 오전 11시,<br />
+      두 사람의 배포가 완료되는 순간 열립니다.
+    </div>
+    <div class="countdown" id="lockCountdown">T-000:00:00:00</div>
+    <a class="back" href="main.html">$ cd ../invitation</a>
+  </div>
+
+
+  <!-- release 노트 (예식 후) -->
+  <div id="released">
+
+    <div class="release-head">
+      <span class="tag-badge">🎉 tag: v1.0.0 — production</span>
+      <h1>저희, 부부가 되었습니다</h1>
+      <div class="sub">Sunghyun Yoon &amp;&amp; Yul Heo — now on main</div>
+    </div>
+
+    <!-- 서비스 상태. 결혼 이후 경과 시간이 실시간으로 흐른다. -->
+    <section>
+      <div class="sec-label">status: systemctl status marriage</div>
+      <div class="envblock unit-status">
+        <div><span class="dot">●</span> marriage.service — Yoon &amp; Heo</div>
+        <div>&nbsp;&nbsp;&nbsp;Loaded: <span class="v">loaded (enabled; preset: forever)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;Active: <span class="p">active (running)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;since: <span class="v">Sat 2027-09-25 11:00:00 KST</span></div>
+        <div>&nbsp;&nbsp;&nbsp;Uptime: <span class="uptime" id="uptime">0d 0h 0m 0s</span></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-label">changelog: CHANGELOG.md</div>
+      <div class="envblock changelog">
+        <div class="ver-line">## [1.0.0] — 2027-09-25</div>
+        <div>&nbsp;</div>
+        <div><span class="add">+ Added</span>: 평생의 동반자</div>
+        <div><span class="add">+ Added</span>: 두 가족의 새로운 연결</div>
+        <div><span class="add">+ Merged</span>: sunghyun-yoon ← yul-heo</div>
+        <div><span class="dep">- Deprecated: 각자의 솔로 생활</span></div>
+        <div>&nbsp;</div>
+        <div><span class="brk">BREAKING CHANGE</span>: 이제 모든 결정은</div>
+        <div>&nbsp;&nbsp;둘이 함께 내립니다.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="sec-label">message: 감사 인사</div>
+      <p class="thanks">
+        축하해 주신 모든 분들 덕분에<br />
+        저희의 첫 배포가 무사히 끝났습니다.<br /><br />
+        보내주신 따뜻한 마음을 기억하며<br />
+        오래도록 안정적으로,<br />
+        서로에게 다정한 부부로 살겠습니다.
+        <span class="names">— 윤성현, 허율 올림</span>
+      </p>
+    </section>
+
+    <section style="text-align: center;">
+      <div class="btn-row">
+        <a class="btn" href="main.html">← 청첩장으로</a>
+        <a class="btn rose" href="developer.html">개발자 버전으로</a>
+      </div>
+    </section>
+
+    <footer>
+      <div class="ft-line exit">+++ now running: forever +++</div>
+    </footer>
+  </div>
+</div>
+
+<script src="js/data.js?v=74c7a31c"></script><script src="js/config.js?v=74c7a31c"></script>
+<script>
+  /* theme는 청첩장에서 고른 값(localStorage)을 그대로 따라간다.
+     URL에 ?theme=dark 또는 ?theme=light 를 붙이면 강제로 지정할 수 있다. */
+  const urlTheme = new URLSearchParams(location.search).get('theme');
+  const savedTheme = localStorage.getItem('wedding-theme');
+  const systemLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+  document.documentElement.dataset.theme =
+    urlTheme || savedTheme || (systemLight ? 'light' : 'dark');
+
+  /* 예식 시각 전이면 403 화면을, 지났으면 release 노트를 보여준다.
+     미리보기는 /release?preview=1 로 연다. */
+
+  const locked = document.getElementById('locked');
+  const released = document.getElementById('released');
+
+  if (isWeddingDeployed()) {
+    released.style.display = 'block';
+
+    // 결혼 이후 경과 시간(uptime)을 실시간으로 갱신한다.
+    const uptimeEl = document.getElementById('uptime');
+
+    function tickUptime() {
+      const diff = Math.max(0, Date.now() - CONFIG.date.getTime());
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor(diff / 3600000) % 24;
+      const m = Math.floor(diff / 60000) % 60;
+      const s = Math.floor(diff / 1000) % 60;
+      uptimeEl.textContent = `${d}d ${h}h ${m}m ${s}s`;
+    }
+
+    tickUptime();
+    setInterval(tickUptime, 1000);
+  } else {
+    locked.style.display = 'flex';
+
+    // 열리기까지 남은 시간을 countdown한다.
+    const cdEl = document.getElementById('lockCountdown');
+    const pad2 = (n) => String(n).padStart(2, '0');
+
+    function tickLock() {
+      const diff = Math.max(0, CONFIG.date.getTime() - Date.now());
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor(diff / 3600000) % 24;
+      const m = Math.floor(diff / 60000) % 60;
+      const s = Math.floor(diff / 1000) % 60;
+      cdEl.textContent = `T-${String(d).padStart(3, '0')}:${pad2(h)}:${pad2(m)}:${pad2(s)}`;
+    }
+
+    tickLock();
+    setInterval(tickLock, 1000);
+  }
+</script>
+</body>
+</html>

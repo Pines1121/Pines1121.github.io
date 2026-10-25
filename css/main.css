@@ -1,0 +1,1480 @@
+/*
+   main.css: main version style. index.html 전용이다.
+   [A] base layout과 [B] theme 오버라이드를 한 파일로 합쳤다.
+   [B]가 [A] 뒤에 와서 색과 font와 여백을 다시 입힌다.
+   layout과 동작은 js/main.js가, 날짜와 사진과 profile 같은 내용은 js/config.js가 관리한다.
+ */
+
+/* [A] base layout */
+
+
+/* 01. 변수 & base */
+
+:root {
+  --paper: #faf7f1;
+  --paper-deep: #f1ece2;
+  --card: #ffffff;
+  --line: #e7e0d2;
+  --line-soft: #efe9dc;
+
+  --ink: #433e35;
+  --ink-bright: #2b2720;
+  --soft: #8a8172;
+  --faint: #a89f8e;
+
+  --rose: #bd5d7c;
+  --rose-soft: #e7c3cf;
+  --leaf: #5a7a5e;
+  --gold: #b08d4f;
+
+  --serif: 'Gowun Batang', serif;
+  --sans: 'IBM Plex Sans KR', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--paper-deep);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-weight: 400;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 은은한 종이 질감 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+
+/* 02. layout & reveal animation */
+
+.paper {
+  position: relative;
+  max-width: 430px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  overflow-x: hidden;
+  background: var(--paper);
+  border-left: 1px solid var(--line-soft);
+  border-right: 1px solid var(--line-soft);
+}
+
+section {
+  padding: 68px 26px;
+}
+
+.rv {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rv.in {
+  opacity: 1;
+  transform: none;
+}
+
+.rv.d1 { transition-delay: 0.12s; }
+.rv.d2 { transition-delay: 0.24s; }
+.rv.d3 { transition-delay: 0.36s; }
+
+
+/* 03. 표지 */
+
+.cover {
+  padding: 72px 26px 56px;
+  text-align: center;
+}
+
+.cover .small-cap {
+  font-size: 13px;
+  letter-spacing: 0.45em;
+  text-indent: 0.45em;       /* letter-spacing 마지막 글자 보정 */
+  color: var(--gold);
+}
+
+.cover h1 {
+  margin-top: 26px;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 36px;
+  letter-spacing: 0.14em;
+  color: var(--ink-bright);
+  line-height: 1.6;
+}
+
+.cover h1 .and {
+  display: block;
+  margin: 2px 0;
+  font-size: 17px;
+  color: var(--rose);
+}
+
+.cover .cover-date {
+  margin-top: 24px;
+  font-family: var(--serif);
+  font-size: 17.5px;
+  color: var(--ink);
+}
+
+.cover .cover-venue {
+  margin-top: 6px;
+  font-size: 15.5px;
+  color: var(--soft);
+}
+
+/* 아치형 main 사진 */
+.arch-photo {
+  width: min(100%, 400px);   /* height는 aspect-ratio(4/5)를 따라 폭에 비례해 자동으로 커진다 */
+  aspect-ratio: 4 / 5;
+  margin: 44px auto 0;
+  overflow: hidden;
+  border-radius: 999px 999px 18px 18px;
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 50px -28px rgba(95, 75, 55, 0.45);
+  background: var(--card);
+}
+
+.arch-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* '축하 전하기' 아래의 전체폭 사진. 좌우 padding이 없는 .paper의 직계 자식이라 화면을 꽉 채운다. */
+.bless-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0;
+}
+
+
+/* 04. section label & 구분 장식 */
+
+.label {
+  margin-bottom: 14px;
+  text-align: center;
+  font-size: 13.5px;
+  letter-spacing: 0.4em;
+  text-indent: 0.4em;
+  color: var(--gold);
+}
+
+.label-title {
+  margin-bottom: 34px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 24px;
+  letter-spacing: 0.1em;
+  color: var(--ink-bright);
+}
+
+/* 꽃 glyph 구분선 */
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 0 26px;
+  color: var(--rose-soft);
+  font-size: 15px;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 0 0 84px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--line));
+}
+
+.divider::after {
+  background: linear-gradient(90deg, var(--line), transparent);
+}
+
+
+/* 05. 인사말 & 가족 소개 */
+
+.greeting {
+  font-family: var(--serif);
+  font-size: 16.5px;
+  line-height: 2.15;
+  text-align: center;
+  word-break: keep-all;
+  color: var(--ink);
+}
+
+.greeting p + p {
+  margin-top: 30px;
+}
+
+.greeting .soft {
+  font-size: 15.5px;
+  color: var(--soft);
+}
+
+/* 가족 소개 */
+.family {
+  margin-top: 46px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 18px;
+  line-height: 2.5;
+  color: var(--ink);
+}
+
+.family .parents {
+  color: var(--soft);
+}
+
+.family .rel {
+  margin: 0 6px;
+  font-size: 14.5px;
+  color: var(--faint);
+}
+
+.family b {
+  font-weight: 700;
+  font-size: 19px;
+  color: var(--ink-bright);
+}
+
+.family .role {
+  display: block;
+  margin-top: -8px;
+  font-family: var(--sans);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+
+
+/* 06. gallery (가로 swipe) & lightbox */
+
+/* gallery. 3열 정사각 grid이며, 사진이 늘면 아래로 자동 확장된다. */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.g-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--card);
+  cursor: pointer;
+  box-shadow: 0 8px 18px -14px rgba(95, 75, 55, 0.30);
+}
+
+.g-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery-hint {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 13.5px;
+  letter-spacing: 0.16em;
+  color: var(--faint);
+}
+
+/* gallery 3×3 pagination */
+.gallery-pager {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.gallery-pager .pg-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  -webkit-appearance: none;   /* iOS의 native button rendering을 끈다. active 숫자가 안 보이던 문제를 막는다. */
+  appearance: none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--soft);
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s, background 0.25s;
+}
+
+/* hover는 실제 pointer(마우스) 기기에서만 적용한다.
+   touch에서는 tap한 뒤 :hover가 고착돼 비활성 page button이 활성(rose 테두리)처럼 보였다. */
+@media (hover: hover) {
+  .gallery-pager .pg-btn:hover:not(:disabled) {
+    border-color: var(--rose);
+    color: var(--rose);
+  }
+}
+
+.gallery-pager .pg-btn.active {
+  background: var(--rose);
+  border-color: var(--rose);
+  color: #fff;
+  -webkit-text-fill-color: #fff;   /* iOS: color가 무시돼 숫자가 안 보이던 것 강제 지정 */
+}
+
+.gallery-pager .pg-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* 사진 placeholder */
+.ph-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(150deg, #f7eee9, #f3e7ea);
+  border-radius: inherit;
+  text-align: center;
+}
+
+.ph-placeholder .ico {
+  font-size: 26px;
+  opacity: 0.6;
+}
+
+.ph-placeholder .fn {
+  font-size: 12px;
+  color: var(--soft);
+}
+
+.ph-placeholder .hint {
+  font-size: 11px;
+  color: var(--faint);
+}
+
+/* lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(38, 30, 24, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.lightbox.open {
+  display: flex;
+}
+
+.lightbox img {
+  max-width: 92vw;
+  max-height: 78vh;
+  border-radius: 12px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+
+.lightbox .lb-cap {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  color: #d8cfc2;
+}
+
+.lightbox button {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  background: rgba(0, 0, 0, 0.55);              /* 시인성↑: 어두운 알약 + 밝은 테두리 */
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  transition: background 0.2s, transform 0.15s;
+}
+
+.lightbox button:hover  { background: rgba(0, 0, 0, 0.78); }
+.lightbox button:active { transform: scale(0.93); }
+
+/* 닫기는 상단에, 이전과 다음 화살표는 사진 좌우 끝에 약간 투명하게 둔다.
+   닫기(✕)는 너무 커 보이지 않게 화살표보다 작게(34px) 줄였다. */
+.lightbox .lb-close { top: 14px; right: 14px; width: 34px; height: 34px; font-size: 16px; }
+.lightbox .lb-prev, .lightbox .lb-next { top: 50%; bottom: auto; transform: translateY(-50%); opacity: 0.55; }
+.lightbox .lb-prev  { left: 10px; }
+.lightbox .lb-next  { right: 10px; }
+.lightbox .lb-prev:active, .lightbox .lb-next:active { transform: translateY(-50%) scale(0.93); }
+
+/* 가로/짧은 화면(세로 여백 부족): 사진을 더 줄여 하단 button과 겹치지 않게 */
+@media (max-height: 600px) {
+  .lightbox img { max-height: 62vh; }
+}
+
+
+/* 07. 예식 안내 (D-day & 달력) */
+
+.when-date {
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 22px;
+  letter-spacing: 0.08em;
+  color: var(--ink-bright);
+}
+
+.when-time {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 15px;
+  color: var(--soft);
+}
+
+/* D-day */
+.dday {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.dd-cell {
+  min-width: 74px;
+  padding: 15px 8px 11px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  text-align: center;
+}
+
+.dd-cell b {
+  display: block;
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 27px;
+  color: var(--rose);
+  font-variant-numeric: tabular-nums;
+}
+
+.dd-cell span {
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  color: var(--faint);
+}
+
+.dday-note {
+  margin-top: 22px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 16.5px;
+  color: var(--soft);
+}
+
+.dday-note b {
+  color: var(--rose);
+  font-weight: 700;
+}
+
+/* 달력 */
+.cal {
+  margin-top: 36px;
+  padding: 26px 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.cal-title {
+  margin-bottom: 18px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 16px;
+  letter-spacing: 0.3em;
+  text-indent: 0.3em;
+  color: var(--ink);
+}
+
+.cal table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.cal th {
+  padding: 6px 0;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+}
+
+.cal th:first-child,
+.cal td:first-child .d {
+  color: #c96a6a;
+}
+
+.cal td {
+  padding: 4px 0;
+  text-align: center;
+}
+
+.cal .d {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 15px;
+  color: var(--soft);
+}
+
+.cal .d.wedding-day {
+  background: var(--rose);
+  color: #fff;
+  font-weight: 700;
+  animation: pulse 2.4s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(189, 93, 124, 0.14); }
+  50%      { box-shadow: 0 0 0 8px rgba(189, 93, 124, 0.08); }
+}
+
+
+/* 08. 오시는 길 */
+
+.venue-card {
+  padding: 28px 22px;
+  text-align: center;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.venue-card .vc-name {
+  font-family: var(--serif);
+  font-size: 24px;
+  color: var(--ink-bright);
+}
+
+.venue-card .vc-name small {
+  font-size: 16px;
+  color: var(--soft);
+}
+
+.venue-card .vc-addr {
+  margin-top: 10px;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.venue-card .vc-sub {
+  margin-top: 6px;
+  font-size: 14.5px;
+  color: var(--soft);
+}
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+/* 주차 안내 */
+.parking-note {
+  margin-top: 16px;
+  padding: 16px 18px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  font-size: 15.5px;
+  line-height: 1.85;
+  color: var(--soft);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.parking-note .pn-title {
+  font-family: var(--serif);
+  font-size: 15px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.parking-note b {
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.parking-note .pn-tip {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--rose);
+}
+
+.btn {
+  flex: 1;
+  min-width: 110px;
+  padding: 14px 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: var(--sans);
+  font-size: 15px;
+  text-align: center;
+  text-decoration: none;
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s, transform 0.15s;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:hover {
+  border-color: var(--rose);
+  color: var(--rose);
+}
+
+/* 네이버 지도 embed. 키가 있으면 지도를, 없으면 안내 문구(.is-fallback)를 보여준다. */
+.map-embed {
+  height: 260px;
+  margin-top: 18px;
+  /* section 좌우 padding(26px)을 상쇄해 .paper 폭 전체로 넓힌다 */
+  width: auto;
+  margin-left: -26px;
+  margin-right: -26px;
+  overflow: hidden;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--card);
+}
+
+.map-embed .map-note { display: none; }
+
+.map-embed.is-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  padding: 22px 18px;
+  text-align: center;
+}
+
+.map-embed.is-fallback .map-note {
+  display: block;
+  font-size: 14.5px;
+  color: var(--soft);
+}
+
+
+/* 09. 마음 전하실 곳 */
+
+.gift-note {
+  margin-bottom: 22px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 2;
+  color: var(--soft);
+}
+
+details.gift {
+  overflow: hidden;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+}
+
+details.gift + details.gift {
+  margin-top: 12px;
+}
+
+details.gift summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px 18px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 15.5px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+details.gift summary::-webkit-details-marker {
+  display: none;
+}
+
+details.gift summary .arrow {
+  margin-left: auto;
+  color: var(--faint);
+  transition: transform 0.3s;
+}
+
+details.gift[open] summary .arrow {
+  transform: rotate(90deg);
+}
+
+details.gift .acc-list {
+  border-top: 1px solid var(--line-soft);
+}
+
+.acc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 18px;
+  font-size: 15px;
+}
+
+.acc + .acc {
+  border-top: 1px dashed var(--line-soft);
+}
+
+.acc .nm {
+  flex: none;
+  width: 48px;   /* 이름 3자 폭에 맞춰 줄여서 이름과 계좌정보 사이 공백을 좁힌다 */
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.acc .no {
+  font-size: 14px;
+  color: var(--soft);
+}
+
+.acc button {
+  flex: none;
+  margin-left: auto;
+  padding: 7px 12px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--soft);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.acc button:hover {
+  color: var(--rose);
+  border-color: var(--rose);
+}
+
+.acc button.copied {
+  color: var(--leaf);
+  border-color: var(--leaf);
+}
+
+/* 계좌 펼침 button. details 밖 container용이며 js/private.js가 만든다. */
+.reveal-btn {
+  display: inline-block;
+}
+
+.acc-note {
+  padding: 14px 18px;
+  font-size: 14px;
+  color: var(--soft);
+  text-align: center;
+}
+
+
+/* 10. 축하 전하기 */
+
+#bless {
+  text-align: center;
+}
+
+.bless-input {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  margin: 0 auto 6px;
+  padding: 13px 16px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.bless-input::placeholder { color: var(--soft); }
+
+.bless-input:focus {
+  outline: none;
+  border-color: var(--rose);
+}
+
+.input-hint {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  color: var(--soft);
+  text-align: center;
+}
+
+/* 축하 한마디 글자수 counter (config.js가 입력창 뒤에 삽입) */
+.bless-count {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: var(--soft);
+  text-align: center;
+}
+
+.bless-count.over {
+  color: #c0392b;
+  font-weight: 700;
+}
+
+.bless-input.over-limit {
+  border-color: #c0392b;
+}
+
+.bless-btn {
+  margin-top: 8px;
+  padding: 17px 38px;
+  background: linear-gradient(135deg, #fdf3f6, #fbf6ec);
+  border: 1px solid var(--rose-soft);
+  border-radius: 99px;
+  font-family: var(--serif);
+  font-size: 17px;
+  color: var(--rose);
+  cursor: pointer;
+  box-shadow: 0 12px 28px -16px rgba(189, 93, 124, 0.4);
+  transition: all 0.3s;
+}
+
+.bless-btn:hover {
+  border-color: var(--rose);
+}
+
+.bless-btn:active {
+  transform: scale(0.96);
+}
+
+.bless-btn.blessed {
+  border-color: var(--leaf);
+  color: var(--leaf);
+  pointer-events: none;
+}
+
+.bless-msg {
+  min-height: 24px;
+  margin-top: 16px;
+  font-size: 15px;
+  color: var(--leaf);
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+
+.bless-msg.show {
+  opacity: 1;
+}
+
+/* 축하 기록 */
+.bless-log {
+  margin-top: 28px;
+  padding: 20px 20px 16px;
+  text-align: left;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  font-size: 15px;
+  line-height: 2.2;
+}
+
+/* 목록만 세로로 scroll한다. 합계(.bl-total)는 scroll 영역 밖이라 항상 보인다.
+   높이는 약 5.5줄치(.bl-line 24.75px에 줄간격 7px 기준)로 잡았다.
+   마지막 줄이 반쯤 걸쳐 보이는 것 자체가 아래에 더 있다는 신호가 된다. */
+.bless-log .bl-lines {
+  max-height: 168px;
+  overflow-y: auto;
+  padding-right: 8px;                /* scrollbar와 글자 사이 여백 */
+  overscroll-behavior: contain;      /* 끝까지 내려도 page가 따라 밀리지 않게 */
+  -webkit-overflow-scrolling: touch; /* iOS 관성 scroll */
+  scrollbar-width: thin;
+  scrollbar-color: var(--rose-soft) transparent;
+}
+
+/* 기본 회색 막대가 종이 톤을 깨서 scrollbar도 theme 색으로 */
+.bless-log .bl-lines::-webkit-scrollbar { width: 4px; }
+.bless-log .bl-lines::-webkit-scrollbar-track { background: transparent; }
+
+.bless-log .bl-lines::-webkit-scrollbar-thumb {
+  background: var(--rose-soft);
+  border-radius: 99px;
+}
+
+.bless-log .bl-line {
+  color: var(--soft);
+  line-height: 1.65;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.bless-log .bl-line + .bl-line {
+  margin-top: 7px;
+}
+
+.bless-log .bl-line .ts {
+  color: var(--rose);
+}
+
+/* '더보기'. scroll 영역 안, 목록 맨 끝에 붙어 끝까지 내려야 보인다. */
+.bless-log .bl-more {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 9px 12px;
+  background: transparent;
+  border: 1px dashed var(--rose-soft);
+  border-radius: 10px;
+  font-family: inherit;
+  font-size: 13.5px;
+  color: var(--rose);
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s;
+}
+
+@media (hover: hover) {
+  .bless-log .bl-more:hover {
+    background: #fdf3f6;
+    border-color: var(--rose);
+  }
+}
+
+.bless-log .bl-more:disabled {
+  color: var(--faint);
+  border-color: var(--line);
+  cursor: default;
+}
+
+.bless-log .bl-total {
+  margin-top: 10px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line-soft);
+  font-family: var(--serif);
+  font-size: 15.5px;
+  color: var(--ink);
+}
+
+.bless-log .bl-total b {
+  color: var(--rose);
+  font-weight: 700;
+}
+
+/* 꽃잎 confetti */
+.confetti {
+  position: fixed;
+  z-index: 110;
+  pointer-events: none;
+  font-size: 16px;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(420deg);
+    opacity: 0.15;
+  }
+}
+
+/* hidden page banner (예식 후 노출) */
+.release-banner {
+  display: none;
+  margin: 26px auto 0;
+  padding: 16px;
+  max-width: 330px;
+  text-align: center;
+  text-decoration: none;
+  background: #f3f7f1;
+  border: 1px solid #cbdcc8;
+  border-radius: 14px;
+  font-family: var(--serif);
+  font-size: 15px;
+  color: var(--leaf);
+}
+
+.release-banner.show {
+  display: block;
+}
+
+
+/* 11. footer */
+
+footer {
+  padding: 40px 26px 60px;
+  border-top: 1px solid var(--line);
+  text-align: center;
+  font-size: 14px;
+  line-height: 2.4;
+  color: var(--faint);
+}
+
+footer .thanks-line {
+  font-family: var(--serif);
+  font-size: 16px;
+  color: var(--soft);
+}
+
+/* version 안내 문구. 개발자와 terminal version link 위에 오는 설명이다. */
+footer .version-note {
+  margin: 24px auto 0;
+  max-width: 330px;
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: var(--faint);
+  word-break: keep-all;
+}
+
+/* version 전환 link. 반반 가로 배치로 작게 둔다. */
+footer .version-links {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+footer .version-link {
+  flex: 1;
+  padding: 9px 8px;
+  text-decoration: none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--soft);
+  white-space: nowrap;
+  transition: border-color 0.25s, color 0.25s;
+}
+
+footer .version-link:hover {
+  border-color: var(--leaf);
+  color: var(--leaf);
+}
+
+/* 청첩장 공유 button. page 톤에 맞춘 부드러운 outline. */
+footer .share-btn {
+  display: block;
+  width: 100%;
+  margin: 18px 0 0;
+  padding: 13px 12px;
+  background: var(--card);
+  color: var(--rose);
+  border: 1px solid var(--rose-soft);
+  border-radius: 12px;
+  font-family: var(--sans);
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s, color 0.25s, transform 0.15s;
+}
+
+footer .share-btn:hover { background: var(--rose); border-color: var(--rose); color: #fff; }
+footer .share-btn:active { transform: scale(0.97); }
+
+
+/* 12. 반응형 & 접근성 */
+
+@media (max-width: 380px) {
+  .dd-cell {
+    min-width: 62px;
+  }
+
+  .cover h1 {
+    font-size: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .rv {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+
+/* [B] theme 오버라이드
+   [A]의 layout 위에 색과 font와 여백을 다시 입힌다. */
+
+:root {
+  /* 면(surface): 따뜻한 ivory 화이트 */
+  --paper: #fffdfb;
+  --paper-deep: #f3ede6;
+  --card: #ffffff;
+
+  /* 선(line): 따뜻한 hairline */
+  --line: #ece5dd;
+  --line-soft: #f4efe9;
+
+  /* 글자: 부드러운 웜 charcoal. 본문과 보조 text를 더 진하게 잡아 가독성을 올렸다.
+     soft는 #978d82(약 2.7:1)에서 #6f665a(약 5.8:1)로,
+     faint는 #c2b8ac(약 1.9:1)에서 #7d7466(약 4.4:1)로 올렸다. */
+  --ink: #35302a;
+  --ink-bright: #1c1813;
+  --soft: #6f665a;
+  --faint: #7d7466;
+
+  /* 포인트: 로맨틱 red-rose, 웜 gold, sage */
+  --rose: #c2566a;
+  --rose-soft: #f0d3d8;
+  --leaf: #7e977f;
+  --gold: #bd9670;
+
+  /* font: 본문은 Gowun Dodum, 제목과 serif는 Gowun Batang */
+  --sans: 'Gowun Dodum', 'Apple SD Gothic Neo', sans-serif;
+  --serif: 'Gowun Batang', serif;
+  --display: 'Gowun Batang', serif;
+}
+
+/* 종이 질감(noise)을 없애 맑고 모던하게 */
+body::before { display: none; }
+
+/* 본문 card. 얇은 웜 hairline을 데스크톱에서만 은은하게 준다. */
+.paper {
+  border-left: 1px solid var(--line-soft);
+  border-right: 1px solid var(--line-soft);
+}
+
+
+/* 표지: 여백을 더 넓히고 디스플레이 명조로 */
+
+.cover {
+  padding: 52px 26px 56px;   /* WEDDING INVITATION 위 공백을 줄인다 */
+}
+
+.cover .small-cap {
+  font-size: 12px;           /* invitation 문구를 작게 */
+  letter-spacing: 0.5em;
+  text-indent: 0.5em;
+  color: var(--gold);
+}
+
+.cover h1 {
+  margin-top: 26px;
+  font-family: var(--display);
+  font-size: 40px;           /* 표지 제목을 크게 */
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  text-indent: 0.18em;
+}
+
+/* 이름 사이 빨간 heart 악센트 (vividvows 톤) */
+.cover h1 .and {
+  display: block;
+  margin: 8px 0;
+  font-size: 24px;
+  color: var(--rose);
+  text-indent: 0;
+}
+
+.cover .cover-date {
+  margin-top: 26px;
+  font-family: var(--display);
+  letter-spacing: 0.02em;
+}
+
+.arch-photo {
+  margin-top: 28px;          /* 아치 사진과 예식장 문구 사이 공백을 줄인다 */
+  border-color: var(--line);
+  box-shadow: 0 26px 54px -30px rgba(120, 70, 60, 0.32);
+}
+
+
+/* section label & 구분 장식 */
+
+.label {
+  letter-spacing: 0.42em;
+  text-indent: 0.42em;
+  color: var(--gold);
+}
+
+.label-title {
+  margin-bottom: 30px;
+  font-family: var(--display);
+  font-size: 23px;           /* section 타이틀을 크게 */
+  letter-spacing: 0.12em;
+  text-indent: 0.12em;
+}
+
+.divider {
+  color: var(--rose);
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.divider::before,
+.divider::after {
+  flex-basis: 70px;
+}
+
+
+/* 인사말: 본문은 부드러운 serif를 유지 */
+
+.greeting {
+  font-size: 18.5px;
+  line-height: 2.15;
+}
+
+.family b {
+  color: var(--ink-bright);
+}
+
+
+/* 신랑, 신부 profile (main version 전용) */
+
+/* 나란한 2열. 큰 세로 사진 2장을 나란히 두고 아래에 이름과 정보를 붙인다. */
+.profile {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+/* 세로형 card. 위에 사진, 아래에 캡션을 두고 배경과 테두리 없이 page 위에 바로 올린다. */
+.pf-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  background: none;
+  border: 0;
+  box-shadow: none;
+  text-align: center;
+}
+
+/* 세로 4:5 frame. object-fit:cover로 신랑과 신부의 높이를 맞춘다. */
+.pf-photo {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #f3e6ea;   /* image load 전 배경 */
+}
+
+.pf-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;         /* frame에 꽉 차게 crop */
+  object-position: 50% 20%;  /* 기본 crop 초점. 개별값은 config.photoFocus로 덮어쓴다. */
+}
+
+/* 사진이 없을 때만 쓰는 이니셜. 4:5 box는 그대로 유지한다. */
+.pf-photo.is-empty {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, #f8ebe9, #f3e6ea);   /* 사진 없을 때만 배경(이니셜) */
+  font-family: var(--display);
+  font-size: 44px;
+  color: var(--rose);
+}
+
+.pf-card figcaption {
+  width: 100%;
+  margin-top: 12px;
+}
+
+/* 역할과 이름을 한 줄로 붙인다. 역할은 회색으로 작게, 이름은 진하게 크게. */
+.pf-role {
+  display: inline;
+  font-size: 14px;
+  font-weight: 400;   /* Gowun Dodum은 400만 있어 600/700은 가짜 bold로 뭉툭해짐 → 400 유지 */
+  letter-spacing: 0.02em;
+  color: var(--soft);
+}
+
+.pf-name {
+  display: inline;
+  margin-left: 7px;
+  font-family: var(--display);
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ink-bright);
+}
+
+.pf-line {
+  margin-top: 6px;
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--soft);
+  word-break: keep-all;
+}
+
+.pf-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;     /* 각 행을 가운데 정렬 */
+  gap: 5px;
+  margin-top: 12px;
+}
+
+.pf-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;   /* 행 내용(키+값)을 가운데로 */
+  gap: 6px;                  /* 키와 값 사이 간격 */
+  font-size: 16.5px;
+  line-height: 1.6;
+}
+
+.pf-k {
+  flex: none;                /* 키는 글자폭만큼만. 가운데 정렬했을 때 간격이 고르다. */
+  font-size: 14.5px;
+  font-weight: 400;   /* 가짜 bold를 피한다. 키와 값 구분은 두께 대신 색으로 준다. */
+  letter-spacing: 0.04em;
+  color: var(--soft);
+}
+
+.pf-v {
+  color: var(--ink);
+  word-break: keep-all;
+}
+
+.pf-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.pf-tag {
+  padding: 4px 11px;
+  border-radius: 99px;
+  background: #fbeef0;
+  font-size: 12.5px;
+  color: var(--rose);
+}
+
+/* 두 card 사이 heart. 나란한 2열에서는 render가 넣지 않지만, 안전하게 숨겨 둔다. */
+.pf-amp {
+  display: none;
+}
+
+@media (max-width: 360px) {
+  .profile { gap: 10px; }
+  .pf-name { font-size: 23px; }
+  .pf-photo.is-empty { font-size: 36px; }
+}
+
+
+/* 예식 안내: 달력 강조일 펄스 색을 rose로 */
+
+.venue-card .vc-name {
+  font-family: var(--display);
+}
+
+/* 예식 시간 '오전 11시'를 날짜보다 또렷하게. 크고 진하게, rose 색으로 준다. */
+.when-time {
+  margin-top: 10px;
+  font-family: var(--display);
+  font-size: 27px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--rose);
+}
+
+@keyframes pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(194, 86, 106, 0.14); }
+  50%      { box-shadow: 0 0 0 8px rgba(194, 86, 106, 0.07); }
+}
+
+
+/* button, 축하, lightbox: 톤에 맞춰 보정 */
+
+/* 사진 자리표시. 중립 톤. */
+.g-item     { box-shadow: 0 14px 30px -22px rgba(120, 70, 60, 0.24); }
+
+/* gallery 안내 문구를 가독성을 위해 조금 더 진한 색으로 */
+.gallery-hint { color: var(--soft); }
+
+/* 축하 button. 맑은 화이트 알약에 rose를 얹고 크림 gradient은 뺐다. */
+.bless-btn {
+  padding: 13px 30px;        /* '한번 더 축하하기' button을 작게 */
+  font-size: 16px;
+  background: #ffffff;
+  border-color: var(--rose-soft);
+  color: var(--rose);
+  font-family: var(--display);
+  box-shadow: 0 14px 28px -18px rgba(194, 86, 106, 0.3);
+}
+
+.bless-btn:hover { border-color: var(--rose); }
+
+/* lightbox 배경. 따뜻한 dark. */
+.lightbox { background: rgba(28, 20, 18, 0.93); }
+
+/* hidden page banner(예식 후 노출). 옅은 sage. */
+.release-banner {
+  background: #f6f8f6;
+  border-color: #e1e9e1;
+}
+
+
+/* 여백 정리, 오시는 길과 안내 사항의 box 제거 */
+
+/* section 상하 여백을 줄여 divider와 문구 사이 공백을 좁힌다 */
+section {
+  padding: 48px 26px;
+}
+
+/* 오시는 길과 안내 사항은 card(box)를 없애고 배경 위에 바로 올린다.
+   테두리 없이 깔끔하게 두고, 정렬은 본문과 같은 가운데를 유지한다. */
+.venue-card {
+  padding: 6px 0 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+}
+
+.parking-note {
+  margin-top: 24px;
+  padding: 2px 8px 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+}

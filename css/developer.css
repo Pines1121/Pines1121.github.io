@@ -1,0 +1,1854 @@
+/*
+   developer.css: 개발자 version stylesheet. developer.html과 release.html이 함께 쓴다.
+
+   목차
+   01. theme 변수 (dark 기본, light 오버라이드)
+   02. base와 배경 질감
+   03. layout (.phone, section)
+   04. editor 상단바와 theme toggle
+   05. scroll reveal animation
+   06. section label (code 주석 style)
+   07. HERO (terminal, 이름, merge graph, 장소 banner)
+   08. main 사진, gallery, lightbox
+   09. 초대 문구 (README)
+   10. 신랑신부 card (couple.yaml)
+   11. 깃 log 타임라인
+   12. CI/CD pipeline
+   13. countdown과 달력
+   14. code block (.env, curl)과 button
+   15. 마음 전하실 곳
+   16. approve(deploy)와 confetti
+   17. footer
+   18. 반응형과 접근성
+ */
+
+
+/* 01. theme 변수 */
+
+:root {
+  /* dark theme(기본). 잉크 네이비 IDE. */
+  --bg: #0a0e15;
+  --bg-deep: #070a10;
+  --panel: #10151f;
+  --panel-2: #141a26;
+  --line: #1e2735;
+  --line-soft: #182030;
+
+  --text: #cdd8e4;
+  --text-bright: #eef3f9;
+  --text-dim: #97a6b9;
+  --comment: #8294ab;          /* 주석. 대비를 높인 값. */
+
+  --mint: #7fe0c3;             /* 신랑 */
+  --rose: #f2a7c3;             /* 신부 */
+  --amber: #e8c07d;            /* 문자열 */
+  --blue: #82aaff;             /* 키워드 */
+  --green: #9ece6a;            /* 성공 */
+  --red: #f7768e;
+
+  --on-rose: #1a0d13;          /* rose 배경 위 글자색 */
+
+  --bar-bg: rgba(12, 17, 26, 0.87);
+  --scanline: rgba(0, 0, 0, 0.07);
+  --grain-opacity: 1;
+  --shadow-panel: 0 24px 60px -24px rgba(0, 0, 0, 0.8),
+                  0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+
+  --mono: 'JetBrains Mono', 'IBM Plex Sans KR', monospace;
+  --serif: 'Gowun Batang', serif;
+  --sans: 'IBM Plex Sans KR', sans-serif;
+}
+
+[data-theme='light'] {
+  /* light theme. 따뜻한 종이 질감의 페이퍼 IDE. */
+  --bg: #faf8f3;
+  --bg-deep: #f0ede5;
+  --panel: #ffffff;
+  --panel-2: #f5f2ea;
+  --line: #e1dccf;
+  --line-soft: #eae5d9;
+
+  --text: #4a463e;
+  --text-bright: #28251f;
+  --text-dim: #6d675c;
+  --comment: #837b6c;
+
+  --mint: #0c8f6f;
+  --rose: #c94f7c;
+  --amber: #9a6a12;
+  --blue: #2f63c9;
+  --green: #4e8a23;
+  --red: #d6336c;
+
+  --on-rose: #ffffff;
+
+  --bar-bg: rgba(255, 253, 248, 0.88);
+  --scanline: rgba(0, 0, 0, 0.025);
+  --grain-opacity: 0.55;
+  --shadow-panel: 0 18px 44px -22px rgba(80, 70, 50, 0.35),
+                  0 0 0 1px rgba(0, 0, 0, 0.015) inset;
+}
+
+
+/* 02. base & 배경 질감 */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-deep);
+  color: var(--text);
+  font-family: var(--sans);
+  font-weight: 300;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* 필름 grain */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* CRT scanline */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 51;
+  pointer-events: none;
+  opacity: 0.5;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, var(--scanline) 3px 4px);
+}
+
+
+/* 03. layout */
+
+.phone {
+  position: relative;
+  max-width: 430px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  overflow-x: hidden;
+  border-left: 1px solid var(--line-soft);
+  border-right: 1px solid var(--line-soft);
+  background:
+    radial-gradient(120% 50% at 50% -10%, color-mix(in srgb, var(--blue) 6%, transparent) 0%, transparent 60%),
+    var(--bg);
+  transition: background 0.4s ease;
+}
+
+section {
+  position: relative;
+  padding: 72px 24px;
+}
+
+section + section {
+  border-top: 1px dashed var(--line);
+}
+
+
+/* 04. editor 상단바 + theme toggle */
+
+.editor-bar {
+  position: sticky;
+  top: 0;
+  z-index: 55;   /* 사진(z-index:52)보다 위. scroll할 때 사진이 상단바를 덮지 않게 한다. */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 16px;
+  background: var(--bar-bg);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+.dots {
+  display: flex;
+  gap: 6px;
+}
+
+.dots i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+.dots i:nth-child(1) { background: #f7768e; }
+.dots i:nth-child(2) { background: #e8c07d; }
+.dots i:nth-child(3) { background: #9ece6a; }
+
+.editor-bar .tab {
+  margin-left: auto;
+  min-width: 0;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 아주 좁은 화면에서는 파일명을 숨겨 이름이 잘리지 않게 */
+@media (max-width: 400px) {
+  .editor-bar .tab .fname {
+    display: none;
+  }
+}
+
+.editor-bar .tab b {
+  color: var(--mint);
+  font-weight: 500;
+}
+
+.editor-bar .tab em {
+  color: var(--rose);
+  font-style: normal;
+}
+
+/* 컴팩트 icon toggle. dark는 ☾, light는 ☀ 이며 좁은 바에서도 깨지지 않는다. */
+.theme-toggle {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 1;
+  color: var(--text-dim);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: color 0.25s, border-color 0.25s;
+}
+
+.theme-toggle:hover {
+  color: var(--amber);
+  border-color: var(--amber);
+}
+
+
+/* 05. scroll reveal animation */
+
+.rv {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rv.in {
+  opacity: 1;
+  transform: none;
+}
+
+.rv.d1 { transition-delay: 0.12s; }
+.rv.d2 { transition-delay: 0.24s; }
+.rv.d3 { transition-delay: 0.36s; }
+.rv.d4 { transition-delay: 0.48s; }
+
+
+/* 06. section label (code 주석 style) */
+
+.sec-label {
+  margin-bottom: 28px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  letter-spacing: 0.08em;
+  color: var(--comment);
+}
+
+.sec-label::before {
+  content: '// ';
+  opacity: 0.7;
+}
+
+.sec-label::after {
+  content: '';
+  display: inline-block;
+  vertical-align: middle;
+  width: 48px;
+  height: 1px;
+  margin-left: 12px;
+  background: linear-gradient(90deg, var(--line), transparent);
+}
+
+
+/* 07. HERO (terminal, 이름, merge graph, 장소 banner) */
+
+#hero {
+  padding: 48px 20px 80px;
+}
+
+/* terminal 창 */
+.term {
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-panel);
+}
+
+.term-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.term-head span:last-child {
+  margin-left: auto;
+}
+
+.term-body {
+  /* typing이 끝났을 때의 전체 높이를 미리 확보한다.
+     출력 중에 아래 콘텐츠가 밀리지 않게 하려는 것이다. */
+  min-height: 408px;
+  padding: 20px 18px 24px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 2;
+}
+
+.t-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.t-prompt { color: var(--green); }
+.t-cmd    { color: var(--text); }
+.t-out    { color: var(--text-dim); }
+.t-mint   { color: var(--mint); }
+.t-rose   { color: var(--rose); }
+.t-amber  { color: var(--amber); }
+.t-green  { color: var(--green); }
+
+.cursor {
+  display: inline-block;
+  width: 9px;
+  height: 18px;
+  vertical-align: -2px;
+  background: var(--mint);
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* 두 branch가 합쳐지는 SVG */
+.merge-fig {
+  display: block;
+  width: 220px;
+  margin: 40px auto 0;
+}
+
+.merge-fig path {
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.merge-fig .br-g {
+  stroke: var(--mint);
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+}
+
+.merge-fig .br-b {
+  stroke: var(--rose);
+  stroke-dasharray: 300;
+  stroke-dashoffset: 300;
+}
+
+.merge-fig.in .br-g,
+.merge-fig.in .br-b {
+  animation: draw 2.2s ease forwards 0.3s;
+}
+
+.merge-fig circle {
+  opacity: 0;
+}
+
+.merge-fig .dot-g { fill: var(--mint); }
+.merge-fig .dot-b { fill: var(--rose); }
+.merge-fig .dot-m { fill: var(--text-bright); }
+
+.merge-fig.in circle {
+  animation: pop 0.5s ease forwards 2.2s;
+}
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes pop {
+  to { opacity: 1; }
+}
+
+.hero-names {
+  margin-top: 56px;
+  text-align: center;
+}
+
+.hero-names .ver {
+  margin-bottom: 18px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  letter-spacing: 0.25em;
+  color: var(--comment);
+}
+
+.hero-names h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 38px;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  color: var(--text-bright);
+}
+
+.hero-names h1 .amp {
+  display: block;
+  margin: 6px 0;
+  font-family: var(--mono);
+  font-size: 18px;
+  letter-spacing: 0.3em;
+  color: var(--rose);
+}
+
+.hero-names .eng {
+  margin-top: 10px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  letter-spacing: 0.18em;
+  color: var(--text-dim);
+}
+
+.hero-names .date-line {
+  margin-top: 22px;
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+}
+
+.hero-names .date-line b {
+  color: var(--amber);
+  font-weight: 500;
+}
+
+/* 장소 banner. 헷갈리지 않도록 시인성을 최우선으로 둔다. */
+.venue-banner {
+  margin-top: 36px;
+  padding: 26px 20px;
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid color-mix(in srgb, var(--rose) 35%, var(--line));
+  border-radius: 14px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--rose) 6%, transparent);
+}
+
+.venue-banner .vb-label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--rose);
+}
+
+.venue-banner .vb-name {
+  margin-top: 12px;
+  font-family: var(--serif);
+  font-size: 27px;
+  letter-spacing: 0.06em;
+  color: var(--text-bright);
+}
+
+.venue-banner .vb-name small {
+  font-size: 18px;
+  color: var(--text-dim);
+}
+
+.venue-banner .vb-addr {
+  margin-top: 8px;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.venue-banner .vb-sub {
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+
+/* hidden(release) page 입구 banner. 예식 시각 이후 JS가 .show를 붙인다. */
+.release-banner {
+  display: none;
+  margin-top: 24px;
+  padding: 17px 16px;
+  text-align: center;
+  text-decoration: none;
+  background: color-mix(in srgb, var(--green) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--green) 40%, transparent);
+  border-radius: 12px;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--green);
+  animation: banner-glow 2.4s ease infinite;
+}
+
+.release-banner.show {
+  display: block;
+}
+
+@keyframes banner-glow {
+  0%, 100% { box-shadow: 0 0 16px color-mix(in srgb, var(--green) 12%, transparent); }
+  50%      { box-shadow: 0 0 36px color-mix(in srgb, var(--green) 26%, transparent); }
+}
+
+
+/* 08. main 사진 & 가로 gallery & lightbox */
+
+/* image viewer 창 frame (main 사진) */
+.photo-frame {
+  overflow: hidden;
+  margin-top: 36px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow-panel);
+}
+
+.photo-frame .ph-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.photo-frame .ph-head span:last-child {
+  margin-left: auto;
+  color: var(--comment);
+}
+
+.photo-frame .ph-body {
+  aspect-ratio: 4 / 5;
+}
+
+/* gallery. 3x3 grid에 pagination. */
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+
+.g-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--panel);
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.g-item:hover {
+  border-color: color-mix(in srgb, var(--rose) 45%, transparent);
+}
+
+
+/* gallery 안내 */
+.gallery-hint {
+  margin-top: 12px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
+  color: var(--comment);
+}
+
+/* gallery pagination */
+.gallery-pager {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+}
+
+.gallery-pager .pg-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  -webkit-appearance: none;   /* iOS의 native button rendering을 끈다. active 숫자가 안 보이던 문제를 막는다. */
+  appearance: none;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s, background 0.25s;
+}
+
+/* hover는 실제 pointer(마우스) 기기에서만 적용한다.
+   touch에서는 tap한 뒤 :hover가 고착돼 비활성 page button이 활성(mint 테두리)처럼 보였다. */
+@media (hover: hover) {
+  .gallery-pager .pg-btn:hover:not(:disabled) {
+    border-color: var(--mint);
+    color: var(--mint);
+  }
+}
+
+.gallery-pager .pg-btn.active {
+  background: var(--mint);
+  border-color: var(--mint);
+  color: var(--bg);
+  -webkit-text-fill-color: var(--bg);   /* iOS: color가 무시돼 숫자가 안 보이던 것 강제 지정 */
+}
+
+.gallery-pager .pg-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+/* 실제 사진 */
+.g-item img,
+.ph-body img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 사진 위에 그어지던 CRT scanline(body::after, z-index:51)과 grain(z-index:50)을
+   사진 영역에서만 걷어낸다. 사진 container를 overlay 위로 올리는 방식이고,
+   나머지 UI는 CRT 톤을 그대로 유지한다.
+   상단바 .editor-bar는 z-index:55라 사진보다 위에 있어, scroll해도 사진이 바를 덮지 않는다.
+   주의: .gallery도 반드시 함께 올린다. developer.js의 page 넘김 전환이 #gallery에
+     inline transform: translateX(0)을 남기는데, translateX(0)도 none이 아니라서
+     stacking context를 새로 만든다. 그러면 자식 .g-item의 z-index:52가 .gallery 안에
+     갇혀 root scanline(51) 아래로 내려가고, page를 넘긴 뒤부터 사진에 가로줄이 생긴다.
+     그래서 transform을 받는 .gallery container 자체를 scanline 위(52)로 올려 고정한다. */
+.photo-frame,
+.gallery,
+.g-item {
+  position: relative;
+  z-index: 52;
+}
+
+/* 사진이 아직 없을 때의 placeholder */
+.ph-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, var(--mint) 7%, transparent),
+      color-mix(in srgb, var(--rose) 9%, transparent));
+  border: 1px dashed color-mix(in srgb, var(--text-dim) 40%, transparent);
+  border-radius: inherit;
+  font-family: var(--mono);
+  text-align: center;
+}
+
+.ph-placeholder .ico {
+  font-size: 28px;
+  opacity: 0.75;
+}
+
+.ph-placeholder .fn {
+  font-size: 12.5px;
+  color: var(--text-dim);
+}
+
+.ph-placeholder .hint {
+  font-size: 11px;
+  color: var(--comment);
+}
+
+/* lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(4, 6, 10, 0.92);
+  backdrop-filter: blur(8px);
+}
+
+.lightbox.open {
+  display: flex;
+}
+
+.lightbox img {
+  max-width: 92vw;
+  max-height: 78vh;
+  border-radius: 10px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox .lb-cap {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: #aebccb;
+}
+
+.lightbox button {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  background: rgba(0, 0, 0, 0.55);              /* 시인성↑: 어두운 알약 + 밝은 테두리 (일반 version과 통일) */
+  border: 1.5px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  transition: background 0.2s, transform 0.15s;
+}
+
+.lightbox button:hover  { background: rgba(0, 0, 0, 0.78); }
+.lightbox button:active { transform: scale(0.93); }
+
+/* main(index) version과 통일한다. 닫기는 상단 우측에 작게, 이전과 다음은 사진 좌우 끝에
+   세로 중앙으로 약간 투명하게 둔다. 닫기(✕)는 화살표보다 작게(34px) 줄였다. */
+.lightbox .lb-close { top: 14px; right: 14px; width: 34px; height: 34px; font-size: 16px; }
+.lightbox .lb-prev, .lightbox .lb-next { top: 50%; bottom: auto; transform: translateY(-50%); opacity: 0.55; }
+.lightbox .lb-prev  { left: 10px; }
+.lightbox .lb-next  { right: 10px; }
+.lightbox .lb-prev:active, .lightbox .lb-next:active { transform: translateY(-50%) scale(0.93); }
+
+/* 가로/짧은 화면(세로 여백 부족): 사진을 더 줄여 하단 button과 겹치지 않게 */
+@media (max-height: 600px) {
+  .lightbox img { max-height: 62vh; }
+}
+
+
+/* 09. 초대 문구 (README) */
+
+.readme {
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 2.2;
+  color: var(--text);
+  text-align: center;
+  word-break: keep-all;
+}
+
+.readme .hl-g { color: var(--mint); }
+.readme .hl-b { color: var(--rose); }
+.readme .hl-ok { color: var(--green); }   /* 연두. 승인과 성공(LGTM approve)에 쓴다. */
+
+.readme p + p {
+  margin-top: 30px;
+}
+
+.readme .small {
+  font-size: 16px;
+  line-height: 2;
+  color: var(--text-dim);
+}
+
+.md-quote {
+  margin: 36px 0 0;
+  padding: 4px 0 4px 18px;
+  border-left: 2px solid var(--rose);
+  text-align: left;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--text-dim);
+}
+
+
+/* 10. 신랑신부 card (couple.yaml) */
+
+.yaml-card {
+  position: relative;
+  overflow: hidden;
+  padding: 22px 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: var(--mono);
+  font-size: 15px;
+  line-height: 2.1;
+}
+
+.yaml-card + .yaml-card {
+  margin-top: 18px;
+}
+
+.yaml-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+}
+
+.yaml-card.groom::before { background: linear-gradient(var(--mint), transparent); }
+.yaml-card.bride::before { background: linear-gradient(var(--rose), transparent); }
+
+.yaml-card .key { color: var(--blue); }
+.yaml-card .str { color: var(--amber); }
+.yaml-card .cmt { color: var(--comment); }
+
+.yaml-card .who {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  font-size: 12px;
+  letter-spacing: 0.2em;
+}
+
+.yaml-card.groom .who {
+  color: var(--mint);
+  border-color: color-mix(in srgb, var(--mint) 30%, transparent);
+}
+
+.yaml-card.bride .who {
+  color: var(--rose);
+  border-color: color-mix(in srgb, var(--rose) 30%, transparent);
+}
+
+.yaml-card .big-name {
+  font-family: var(--serif);
+  font-size: 26px;
+  letter-spacing: 0.1em;
+  color: var(--text-bright);
+}
+
+
+/* 11. 깃 log 타임라인 */
+
+/* 좌우 scroll이 생기지 않도록 줄 길이에 맞춰 font 크기를 맞춥니다 */
+.gitlog {
+  overflow-x: auto;          /* 안전장치. 평소에는 scroll이 생기지 않는다. */
+  padding: 22px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 2.2;
+  white-space: pre;
+}
+
+.gitlog .g    { color: var(--mint); }
+.gitlog .b    { color: var(--rose); }
+.gitlog .h    { color: var(--amber); }
+.gitlog .tag  { color: var(--green); }
+.gitlog .head { color: var(--blue); }
+.gitlog .msg  { color: var(--text); }
+.gitlog .dim  { color: var(--comment); }
+.gitlog .date { color: var(--blue); }
+
+
+/* 12. CI/CD pipeline */
+
+.pipeline {
+  display: grid;
+  gap: 10px;
+}
+
+.pl-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 14px;
+}
+
+.pl-step .ic {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  font-size: 14px;
+  color: transparent;        /* done이 되기 전까지 ✓를 숨기고 빈 원만 보여준다 */
+  transition: all 0.4s ease;
+}
+
+.pl-step .nm {
+  flex: 1;
+  color: var(--text-dim);
+  /* 한글이 음절 중간(빈틈없→는)에서 끊기지 않게 단어(공백) 경계로만 줄바꿈.
+     iOS Safari는 기본이 이렇지만 Android Chrome 등은 음절로 끊어 기기마다 달리 보이던 것 통일. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;   /* 한 단어가 줄폭을 넘는 극단적 좁은 화면에서만 예외적으로 끊어 오버플로 방지 */
+}
+
+.pl-step .st {
+  flex: none;
+  margin-left: auto;
+  padding-left: 8px;
+  /* 상태가 PENDING→PASSED/RUNNING→DEPLOYED 로 바뀌며 폭이 변하면 flex:1 인 .nm(이름)의 가용폭이
+     달라져 긴 이름이 reflow → step 높이가 흔들렸다. 가장 긴 'DEPLOYED' 폭을 미리 확보(고정폭+우정렬)해
+     상태가 바뀌어도 이름칸 폭이 그대로 → 높이 변화 없음. */
+  min-width: 78px;
+  text-align: right;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  color: var(--comment);
+}
+
+.pl-step.done .ic {
+  background: color-mix(in srgb, var(--green) 12%, transparent);
+  border-color: color-mix(in srgb, var(--green) 40%, transparent);
+  color: var(--green);
+}
+
+.pl-step.done .nm { color: var(--text); }
+.pl-step.done .st { color: var(--green); }
+
+/* glyph(⟳) 대신 보더 링 spinner를 쓴다. 글꼴이 깨지지 않고 매끈하게 돈다. */
+.pl-step.run .ic {
+  border: 2px solid var(--line);
+  border-top-color: var(--amber);
+  color: transparent;
+  animation: spin 0.9s linear infinite;
+}
+
+.pl-step.run .st {
+  color: var(--amber);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
+/* 13. countdown & 달력 */
+
+.dday-wrap {
+  margin-top: 36px;
+  text-align: center;
+}
+
+.dday-label {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  letter-spacing: 0.2em;
+  color: var(--comment);
+}
+
+.dday {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.dd-cell {
+  flex: 1 1 0;
+  min-width: 0;          /* 좁은 화면에서 cell이 줄어들어 가로로 안 삐져나가게 */
+  max-width: 88px;
+  padding: 14px 4px 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.dd-cell b {
+  display: block;
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: clamp(22px, 7vw, 29px);
+  color: var(--mint);
+  font-variant-numeric: tabular-nums;
+}
+
+.dd-cell span {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--comment);
+}
+
+.dd-sep {
+  align-self: center;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--comment);
+}
+
+/* 달력 */
+.cal {
+  margin-top: 40px;
+  padding: 24px 18px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.cal-title {
+  margin-bottom: 18px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 15px;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+}
+
+.cal table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+}
+
+.cal th {
+  padding: 6px 0;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  color: var(--comment);
+}
+
+/* 일요일 열은 붉게 */
+.cal th:first-child,
+.cal td:first-child .d {
+  color: color-mix(in srgb, var(--red) 70%, transparent);
+}
+
+.cal td {
+  padding: 4px 0;
+  text-align: center;
+}
+
+.cal .d {
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 14.5px;
+  color: var(--text-dim);
+}
+
+.cal .d.wedding-day {
+  background: var(--rose);
+  color: var(--on-rose);
+  font-weight: 700;
+  animation: pulse 2.4s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--rose) 14%, transparent),
+      0 0 24px color-mix(in srgb, var(--rose) 28%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 0 0 7px color-mix(in srgb, var(--rose) 10%, transparent),
+      0 0 36px color-mix(in srgb, var(--rose) 40%, transparent);
+  }
+}
+
+
+/* 14. code block (.env / curl 응답) & button */
+
+.envblock {
+  overflow-x: auto;
+  margin-top: 20px;        /* code와 안내 block 사이 간격. button과 연속 block이 붙지 않게 한다. */
+  padding: 22px 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 2.2;
+}
+
+/* section 첫 block은 sec-label과의 간격(28px)을 그대로 유지한다. 위 margin이 중복되지 않게 한다. */
+.sec-label + .envblock { margin-top: 0; }
+
+/* code 줄은 중간에서 꺾지 않는다. 길면 가로로 scroll한다. */
+.envblock > div {
+  white-space: nowrap;
+}
+
+.envblock .k { color: var(--blue); }
+.envblock .v { color: var(--amber); }
+.envblock .c { color: var(--comment); }
+.envblock .p { color: var(--green); }   /* prompt $ */
+
+.btn-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.btn {
+  flex: 1;
+  min-width: 110px;
+  padding: 14px 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.25s, color 0.25s, transform 0.15s;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn:hover {
+  border-color: var(--mint);
+  color: var(--mint);
+}
+
+.btn.rose:hover {
+  border-color: var(--rose);
+  color: var(--rose);
+}
+
+/* 네이버 지도 embed. 키가 있으면 지도를, 없으면 안내 문구(.is-fallback)를 보여준다. */
+.map-embed {
+  height: 260px;
+  margin-top: 18px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel-2);
+}
+
+.map-embed .map-note { display: none; }
+
+.map-embed.is-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  padding: 20px 18px;
+  text-align: center;
+}
+
+.map-embed.is-fallback .map-note {
+  display: block;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+
+/* 15. 마음 전하실 곳 */
+
+.gift-note {
+  margin: -10px 0 20px;
+  font-size: 15px;
+  line-height: 1.9;
+  color: var(--text-dim);
+}
+
+details.gift {
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+details.gift + details.gift {
+  margin-top: 12px;
+}
+
+details.gift summary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px 18px;
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 14.5px;
+  color: var(--text-dim);
+}
+
+details.gift summary::-webkit-details-marker {
+  display: none;
+}
+
+details.gift summary .arrow {
+  margin-left: auto;
+  color: var(--comment);
+  transition: transform 0.3s;
+}
+
+details.gift[open] summary .arrow {
+  transform: rotate(90deg);
+}
+
+details.gift .acc-list {
+  border-top: 1px solid var(--line-soft);
+}
+
+.acc {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 15px 18px;
+  font-size: 15px;
+}
+
+.acc + .acc {
+  border-top: 1px dashed var(--line-soft);
+}
+
+.acc .nm {
+  flex: none;
+  width: 68px;
+  font-weight: 400;
+  color: var(--text);
+}
+
+.acc .no {
+  display: flex;               /* 은행(.bank) → 그 아래 계좌번호(.num) 세로 배치 */
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+.acc .no .bank { color: var(--text-dim); }
+.acc .no .num { color: var(--text); }   /* 번호는 조금 더 또렷하게 */
+
+.acc button {
+  flex: none;
+  margin-left: auto;
+  padding: 7px 11px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.acc button:hover {
+  color: var(--mint);
+  border-color: var(--mint);
+}
+
+.acc button.copied {
+  color: var(--green);
+  border-color: var(--green);
+}
+
+/* 계좌 펼침 button. details 밖 container용이며 js/private.js가 만든다. */
+.reveal-btn {
+  display: inline-block;
+}
+
+.acc-note {
+  padding: 14px 18px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+
+/* 16. RSVP(deploy) & confetti */
+
+#deploy {
+  padding-bottom: 90px;
+  text-align: center;
+}
+
+#deploy .sec-label {
+  text-align: left;
+}
+
+/* AI agent들의 축하. 흐르는 marquee chip과 순환 메시지. */
+.ai-guests {
+  margin-top: 30px;
+  padding: 18px 0 14px;
+  overflow: hidden;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.ai-guests .ai-head {
+  padding: 0 18px;
+  text-align: left;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--comment);
+}
+
+/* AI 캐릭터 행렬. 둥실 떠 있다가 자기 차례에 폴짝 뛴다. */
+.ai-cast {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 7px;
+  margin-top: 18px;
+  padding: 0 8px;
+}
+
+.ai-char {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 50px;
+  color: var(--text-bright);   /* currentColor 단색 icon(OpenAI/Grok)의 theme색 */
+}
+
+.ai-char .ai-ico {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  animation: ai-bob 2.8s ease-in-out infinite;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.ai-char .ai-ico svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* 둥실거림이 겹치지 않게 시차 부여 */
+.ai-char:nth-child(2n) .ai-ico { animation-delay: 0.5s; }
+.ai-char:nth-child(3n) .ai-ico { animation-delay: 1.1s; }
+.ai-char:nth-child(5n) .ai-ico { animation-delay: 1.7s; }
+
+@keyframes ai-bob {
+  50% { transform: translateY(-5px); }
+}
+
+.ai-char .ai-nm {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.02em;
+  color: var(--comment);
+}
+
+/* 말하는 캐릭터: 점프 + 발광 + 이름 강조 */
+.ai-char.speaking .ai-ico {
+  animation: ai-cheer 0.65s ease;
+  position: relative;
+}
+
+/* 발광을 filter:drop-shadow 대신 둥근 radial-gradient 의사요소로 구현.
+   iOS WebKit은 filter 글로우를 사각형 색 block으로 render하는 버그가 있어
+   filter를 아예 쓰지 않는다. radial-gradient는 모서리가 투명이라 원형으로 보임. */
+.ai-char.speaking .ai-ico::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--c) 0%, transparent 60%);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.ai-char.speaking .ai-nm {
+  color: var(--text);
+}
+
+@keyframes ai-cheer {
+  0%   { transform: translateY(0); }
+  35%  { transform: translateY(-12px) rotate(-7deg) scale(1.15); }
+  65%  { transform: translateY(-6px) rotate(6deg) scale(1.1); }
+  100% { transform: translateY(0); }
+}
+
+/* deploy 승인 순간: 전원 환호 */
+.ai-cast.party .ai-char .ai-ico {
+  animation: ai-cheer 0.7s ease 3;
+}
+
+/* 순환 메시지. 높이를 고정해 메시지 길이가 달라도 위아래로 흔들리지 않는다. */
+.ai-msg {
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  padding: 0 18px;
+  overflow: hidden;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  text-align: center;
+  word-break: keep-all;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+
+.ai-msg.fade {
+  opacity: 0;
+}
+
+.ai-msg .who {
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 700;
+}
+
+.ai-msg .txt {
+  display: block;
+  color: var(--text-dim);
+}
+
+/* 축하 한마디 입력. 어두운 console칸과 왼쪽 prompt로 shell($)처럼 보이게 한다. */
+.deploy-line {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  margin: 28px auto 0;
+}
+
+.deploy-prompt {
+  position: absolute;
+  left: 14px;
+  top: 12px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--green);
+  pointer-events: none;
+}
+
+.deploy-input {
+  display: block;
+  width: 100%;
+  padding: 12px 14px 12px 32px;      /* 왼쪽 prompt($) 자리 확보 */
+  background: var(--bg-deep);        /* 주변 panel보다 어둡게 → console 입력칸처럼 구분 */
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: var(--text-bright);
+  caret-color: var(--mint);
+  text-align: left;
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.deploy-input::placeholder { color: var(--comment); }
+
+.deploy-input:focus {
+  outline: none;
+  border-color: var(--mint);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.35),
+              0 0 0 3px color-mix(in srgb, var(--mint) 22%, transparent);
+}
+
+.input-hint {
+  margin: 7px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--comment);
+  text-align: center;
+}
+
+/* 축하 한마디 글자수 counter (config.js가 입력창 뒤에 삽입) */
+.bless-count {
+  margin: 7px 0 0;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--comment);
+  text-align: center;
+}
+
+.bless-count.over {
+  color: var(--red);
+  font-weight: 500;
+}
+
+.deploy-input.over-limit {
+  border-color: var(--red);
+}
+
+.deploy-btn {
+  margin-top: 14px;
+  padding: 16px 24px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--mint) 10%, transparent),
+    color-mix(in srgb, var(--rose) 10%, transparent));
+  border: 1px solid color-mix(in srgb, var(--mint) 28%, transparent);
+  border-radius: 12px;
+  font-family: var(--mono);
+  /* '$ approve --deploy wedding'(가장 긴 label)이 좁은 화면에서도 한 줄에 들어가게:
+     nowrap 로 'wedding' 줄바꿈 차단 + 폭에 따라 font를 clamp 로 축소(button이 2줄로 커지던 문제). */
+  font-size: clamp(13px, 4vw, 16px);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  max-width: 100%;
+  color: var(--text-bright);
+  cursor: pointer;
+  box-shadow: 0 0 32px color-mix(in srgb, var(--mint) 7%, transparent);
+  transition: all 0.3s;
+}
+
+.deploy-btn:hover {
+  border-color: var(--mint);
+  box-shadow: 0 0 48px color-mix(in srgb, var(--mint) 16%, transparent);
+}
+
+.deploy-btn:active {
+  transform: scale(0.96);
+}
+
+.deploy-btn.deployed {
+  border-color: var(--green);
+  color: var(--green);
+  pointer-events: none;
+}
+
+.deploy-msg {
+  min-height: 24px;
+  margin-top: 18px;
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.6s;
+}
+
+.deploy-msg.show {
+  opacity: 1;
+}
+
+/* 축하 log. tail -f 느낌의 익명 승인 기록. */
+.approval-log {
+  margin-top: 30px;
+  padding: 18px 18px 14px;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 2.1;
+}
+
+.approval-log .al-head {
+  margin-bottom: 6px;
+  color: var(--comment);
+}
+
+/* log header와 '더보기'에서 prompt, 명령어, 주석의 색을 나눈다.
+   code와 주석이 같은 색이면 명령어까지 주석처럼 흐리게 읽히기 때문이다.
+   색은 이 theme의 기존 관례를 따라 prompt는 green, code는 text, 주석은 comment로 준다.
+   범위는 .approval-log 안으로만 한정한다. */
+.approval-log .p   { color: var(--green); }
+.approval-log .cmd { color: var(--text); }
+.approval-log .cm  { color: var(--comment); }
+
+.approval-log .al-line {
+  color: var(--text-dim);
+  line-height: 1.6;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.approval-log .al-line + .al-line {
+  margin-top: 6px;
+}
+
+.approval-log .al-line .ts {
+  color: var(--blue);
+}
+
+.approval-log .al-line .ok {
+  color: var(--green);
+}
+
+.approval-log .al-line.muted {
+  color: var(--comment);
+}
+
+/* 목록만 세로로 scroll한다. 합계(.al-total)는 scroll 영역 밖이라 항상 보인다.
+   마지막 줄이 반쯤 걸쳐 보이는 것 자체가 아래에 더 있다는 신호가 된다. */
+.approval-log .al-lines {
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 8px;                /* scrollbar와 글자 사이 여백 */
+  overscroll-behavior: contain;      /* 끝까지 내려도 page가 따라 밀리지 않게 */
+  -webkit-overflow-scrolling: touch; /* iOS 관성 scroll */
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+.approval-log .al-lines::-webkit-scrollbar { width: 4px; }
+.approval-log .al-lines::-webkit-scrollbar-track { background: transparent; }
+
+.approval-log .al-lines::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 99px;
+}
+
+/* '더보기'. scroll 영역 안, 목록 맨 끝에 있어 끝까지 내려야 보인다.
+   점선 테두리에 좌측 정렬이면 입력칸처럼 읽혀서, 이 theme의 표준 button(.btn)과 같은 차림으로 맞춘다.
+   채운 배경(--panel-2), 실선 --line, radius 10px, 가운데 정렬, 눌림 반응을 준다. */
+.approval-log .al-more {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 11px 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.25s, background 0.25s, transform 0.15s;
+}
+
+@media (hover: hover) {
+  .approval-log .al-more:hover {
+    border-color: var(--mint);
+    background: color-mix(in srgb, var(--mint) 8%, var(--panel-2));
+  }
+
+  .approval-log .al-more:hover .cmd { color: var(--mint); }
+}
+
+.approval-log .al-more:active { transform: scale(0.97); }
+
+.approval-log .al-more:disabled {
+  cursor: default;
+  opacity: 0.55;
+  transform: none;
+}
+
+.approval-log .al-total {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line-soft);
+  color: var(--text);
+}
+
+.approval-log .al-total b {
+  font-weight: 500;
+  color: var(--mint);
+}
+
+.confetti {
+  position: fixed;
+  z-index: 110;
+  pointer-events: none;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 700;
+  animation: fall linear forwards;
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(110vh) rotate(540deg);
+    opacity: 0.2;
+  }
+}
+
+
+/* 17. footer (strace) */
+
+footer {
+  padding: 36px 24px 56px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 2.1;
+  color: var(--comment);
+}
+
+footer .ft-line {
+  white-space: pre-wrap;
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+footer .sys   { color: var(--blue); }
+footer .str   { color: var(--amber); }
+footer .heart { color: var(--rose); }
+footer .num   { color: var(--mint); }
+footer .dim   { color: var(--comment); }
+
+footer .exit {
+  margin-top: 10px;
+  text-align: center;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+}
+
+footer .err {
+  color: var(--red);
+}
+
+/* 다른 version으로 가는 link. main version처럼 2열 반반으로 두고 높이는 절반 정도로 준다. */
+footer .version-links {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+footer .version-link {
+  flex: 1;
+  padding: 8px 8px;
+  text-align: center;
+  text-decoration: none;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--text-dim);
+  white-space: nowrap;
+  transition: border-color 0.25s, color 0.25s;
+}
+
+footer .version-link:hover {
+  border-color: var(--rose);
+  color: var(--rose);
+}
+
+/* 청첩장 공유 button */
+footer .share-btn {
+  display: block;
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 13px 12px;
+  background: var(--panel);
+  border: 1px solid var(--mint);
+  border-radius: 10px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  letter-spacing: 0.03em;
+  color: var(--mint);
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s, transform 0.15s;
+}
+
+footer .share-btn:hover { background: var(--mint); color: #0a0e15; }
+footer .share-btn:active { transform: scale(0.98); }
+
+
+/* 18. 반응형 & 접근성 */
+
+@media (max-width: 380px) {
+  .dd-cell {
+    padding: 12px 2px 9px;
+  }
+
+  .dd-cell b {
+    font-size: 23px;
+  }
+
+  .term-body {
+    font-size: 12px;
+    min-height: 360px;   /* 줄바꿈이 늘어나는 좁은 화면 기준 재계산 */
+  }
+
+  .gitlog {
+    font-size: 11px;
+  }
+
+  .ai-char {
+    width: 42px;
+  }
+
+  .ai-char .ai-ico {
+    width: 32px;
+    height: 32px;
+  }
+
+  .cal .d {
+    width: 34px;
+    height: 34px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .rv {
+    opacity: 1;
+    transform: none;
+  }
+}

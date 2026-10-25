@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+
+  <title>윤성현 ❤️ 허율 결혼합니다 🎉</title>
+  <meta name="description" content="2027년 9월 25일 토요일 오전 11시 월드컵컨벤션 그랜드볼룸. 윤성현 ♥ 허율 결혼합니다." />
+
+  <!-- 카카오톡/SNS 공유 미리보기 (Open Graph)
+       주의: og:image는 반드시 절대 URL이어야 카카오톡이 썸네일을 읽습니다.
+       ?v= cache busting은 배포마다 server가 자동 부여합니다. 사진 교체 후엔 카카오 디버거로 재스크랩:
+       https://developers.kakao.com/tool/debugger/sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="윤성현 ❤️ 허율 결혼합니다 🎉" />
+  <meta property="og:locale" content="ko_KR" />
+  <meta property="og:title" content="윤성현 ❤️ 허율 결혼합니다 🎉" />
+  <meta property="og:description" content="2027년 9월 25일 토요일 오전 11시 월드컵컨벤션 그랜드볼룸" />
+  <meta property="og:url" content="https://pines1121.github.io/main.html" />
+  <meta property="og:image" content="https://pines1121.github.io/photos/demo-cover.jpg" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:width" content="1067" />
+  <meta property="og:image:height" content="1600" />
+  <meta property="og:image:alt" content="윤성현 ❤️ 허율 결혼합니다 🎉" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- 본문은 Gowun Dodum, 제목은 Gowun Batang -->
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=Gowun+Dodum&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
+
+  <!-- main version style. base layout과 theme를 합친 단일 파일이다.
+       동작은 js/main.js가, 날짜와 사진과 profile 같은 내용은 js/config.js가 관리한다. -->
+  <link rel="stylesheet" href="css/main.css?v=74c7a31c" />
+</head>
+
+<body>
+<div class="paper">
+
+  <!-- 표지 -->
+  <section class="cover">
+    <div class="small-cap rv in">WEDDING INVITATION</div>
+
+    <h1 class="rv in">
+      윤성현<span class="and">♥</span>허율
+    </h1>
+
+    <div class="cover-date rv in">2027년 9월 25일 토요일 오전 11시</div>
+    <div class="cover-venue rv in">월드컵컨벤션 그랜드볼룸<br />서울특별시 중구 세종대로 110 2층</div>
+
+    <!-- main 사진 (아치 frame) -->
+    <div class="arch-photo rv d1" id="mainPhoto"></div>
+
+    <!-- hidden page 입구. 예식 후에 노출된다. -->
+    <a class="release-banner" id="releaseBanner" href="release.html">
+      🌿 저희 부부가 되었어요 - 감사 인사 보기
+    </a>
+  </section>
+
+  <div class="divider">❀</div>
+
+
+  <!-- 인사말 -->
+  <section>
+    <div class="label rv">INVITATION</div>
+    <div class="label-title rv">소중한 분들을 초대합니다</div>
+
+    <div class="greeting rv d1">
+      <p>
+        서로 다른 길을 걸어온 두 사람이 만나<br />
+        이제 같은 곳을 바라보며<br />
+        인생이라는 긴 여정을<br />
+        함께 시작하려 합니다.
+      </p>
+      <p>
+        기쁠 때나 슬플 때나<br />
+        서로의 가장 든든한 동반자가 되어<br />
+        믿음과 사랑으로 걸어가겠습니다.
+      </p>
+      <p class="soft">
+        저희의 새로운 시작을 알리는 자리에<br />
+        귀한 걸음 하시어 축복해 주시면<br />
+        더없는 기쁨으로 간직하겠습니다.
+      </p>
+    </div>
+
+    <!-- 가족 소개 -->
+    <div class="family rv d2">
+      <div>
+        <span class="parents">윤지호 </span><span class="rel">의 장남</span> <b>성현</b>
+      </div>
+      <div>
+        <span class="parents">허준 이지영</span><span class="rel">의 장녀</span> <b>율</b>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">✿</div>
+
+
+  <!-- 신랑, 신부 profile -->
+  <!-- 내용은 js/config.js의 CONFIG.profile에서 가져온다. -->
+  <section>
+    <div class="label rv">THE COUPLE</div>
+    <div class="label-title rv">신랑 &amp; 신부</div>
+
+    <div class="profile rv d1" id="profile">
+      <!-- js가 CONFIG.profile에서 자동 생성합니다 -->
+    </div>
+  </section>
+
+  <div class="divider">❀</div>
+
+
+  <!-- 예식 안내 -->
+  <section>
+    <div class="label rv">THE WEDDING DAY</div>
+    <div class="label-title rv">예식 일시</div>
+
+    <div class="rv d1">
+      <div class="when-date">2027년 9월 25일 토요일</div>
+      <div class="when-time">오전 11시</div>
+    </div>
+
+    <div class="dday rv d2">
+      <div class="dd-cell"><b id="cdD">0</b><span>일</span></div>
+      <div class="dd-cell"><b id="cdH">0</b><span>시간</span></div>
+      <div class="dd-cell"><b id="cdM">0</b><span>분</span></div>
+      <div class="dd-cell"><b id="cdS">0</b><span>초</span></div>
+    </div>
+
+    <div class="dday-note rv d2" id="ddayNote">
+      성현 ♥ 율 결혼식이 <b>0일</b> 남았습니다
+    </div>
+
+    <div class="cal rv d3">
+      <div class="cal-title" id="calTitle">2027년 9월</div>
+      <table id="calTable" aria-label="예식 달력"></table>
+    </div>
+  </section>
+
+  <div class="divider">❀</div>
+
+
+  <!-- 오시는 길 -->
+  <section>
+    <div class="label rv">LOCATION</div>
+    <div class="label-title rv">오시는 길</div>
+
+    <div class="venue-card rv d1">
+      <div class="vc-name">월드컵컨벤션 <small>그랜드볼룸</small></div>
+      <div class="vc-addr">서울특별시 중구 세종대로 110 2층</div>
+      <div class="vc-sub">지하철 6호선 월드컵경기장역 인근</div>
+    </div>
+
+    <div class="btn-row rv d2">
+      <a class="btn" href="https://map.naver.com/" target="_blank" rel="noopener">네이버 지도</a>
+      <a class="btn" href="https://map.kakao.com/" target="_blank" rel="noopener">카카오맵</a>
+      <button class="btn" id="copyAddr" type="button">주소 복사</button>
+    </div>
+
+    <!-- 네이버 지도 embed. 키가 있으면 js/config.js가 지도를 그린다. -->
+    <div class="map-embed rv d2" id="naverMap" aria-label="예식장 위치 지도">
+      <div class="map-note">네이버 지도 혹은 카카오맵 버튼으로 길찾기를 열어주세요</div>
+    </div>
+
+    <div class="parking-note rv d3">
+      <div class="pn-title">🚇 지하철</div>
+      지하철 6호선 월드컵경기장역 2·3번 출구에서 도보 3분
+    </div>
+
+    <div class="parking-note rv d3">
+      <div class="pn-title">🚌 버스</div>
+      월드컵경기장 서측 정류소 하차
+    </div>
+
+    <div class="parking-note rv d3">
+      <div class="pn-title">🚗 주차 안내</div>
+      건물 지상 주차장 이용<br />자가용 이용 시 무료주차 1시간 30분<br />(주차등록 필요)
+    </div>
+  </section>
+
+  <div class="divider">✿</div>
+
+
+  <!-- 안내 사항 -->
+  <section>
+    <div class="label rv">INFORMATION</div>
+    <div class="label-title rv">안내 사항</div>
+
+    <div class="parking-note rv d1">
+      <div class="pn-title">🍽 연회 &amp; 식사 안내</div>
+      식사는 예식 30분 전부터 이용하실 수 있습니다.<br />예식홀과 같은 층 연회장에 다채로운 뷔페로 준비했습니다.
+    </div>
+  </section>
+
+  <div class="divider">❀</div>
+
+
+  <!-- gallery -->
+  <section>
+    <div class="label rv">GALLERY</div>
+    <div class="label-title rv">우리의 순간들</div>
+
+    <div class="gallery" id="gallery">
+      <!-- js/main.js가 CONFIG.photos.gallery를 보고 자동 생성한다 -->
+    </div>
+    <div class="gallery-hint rv">사진을 누르면 크게 보여요</div>
+  </section>
+
+  <div class="divider">✿</div>
+
+
+  <!-- 마음 전하실 곳 -->
+  <section>
+    <div class="label rv">WITH LOVE</div>
+    <div class="label-title rv">마음 전하실 곳</div>
+
+    <p class="gift-note rv">
+      참석이 어려우신 분들을 위해 기재했습니다.<br />
+      전해주시는 따뜻한 마음, 소중히 간직하겠습니다.
+    </p>
+
+    <!-- 계좌는 invitation.conf 에만 있다.
+         심어 둔 난독화 blob을 js/private.js가 풀어 그리며, 정적 파일에는 평문이 없다.
+         기본은 닫힌 상태이고 펼칠 때에만 render된다. -->
+    <details class="gift rv d1">
+      <summary>신랑 측 마음 전하실 곳 <span class="arrow">›</span></summary>
+      <div class="acc-list" data-acc="groom" data-copy-label="복사"></div>
+    </details>
+
+    <details class="gift rv d2">
+      <summary>신부 측 마음 전하실 곳 <span class="arrow">›</span></summary>
+      <div class="acc-list" data-acc="bride" data-copy-label="복사"></div>
+    </details>
+  </section>
+
+  <div class="divider">❀</div>
+
+
+  <!-- 축하 전하기 -->
+  <section id="bless">
+    <div class="label rv">CONGRATULATIONS</div>
+    <div class="label-title rv">축하 전하기</div>
+
+    <!-- '마음 전하실 곳'의 안내문(.gift-note)과 글씨체, 색, 자간, 하단 간격(22px)을 맞춘다. -->
+    <p class="gift-note rv">
+      버튼 한 번이면 충분해요.<br />
+      저희에게 큰 힘이 됩니다.
+    </p>
+
+    <input class="bless-input rv d1" id="blessInput" type="text" maxlength="50"
+           placeholder="축하 한마디 (선택, 최대 50자)" autocomplete="off" />
+    <p class="input-hint rv d1">입력하지 않으시면 랜덤한 축하 메세지가 발송됩니다.</p>
+    <button class="bless-btn rv d1" id="blessBtn" type="button">축하의 마음 전하기 ❀</button>
+    <div class="bless-msg" id="blessMsg"></div>
+
+    <!-- 축하 기록. 목록(.bl-lines)만 세로로 scroll하고, 합계(.bl-total)는 항상 보이도록
+         scroll 영역 밖에 둔다. 처음에는 20건(shared의 APPROVAL_PAGE_SIZE)만 받고, 목록 맨 끝의
+         '더보기'를 누르면 20건씩 이어 붙는다(config.js의 loadMoreApprovals). -->
+    <div class="bless-log rv d2">
+      <div class="bl-lines" id="blLines"></div>
+      <div class="bl-total" id="blTotal"></div>
+    </div>
+  </section>
+
+
+  <!-- 축하 전하기 아래의 전체폭(풀블리드) 사진.
+       src는 main.js가 photoSrc()로 넣는다(?v= cache busting). -->
+  <img class="bless-photo rv" id="blessPhoto" alt="웨딩 사진" loading="lazy" />
+
+
+  <!-- footer -->
+  <footer>
+    <div class="thanks-line">저희 두 사람을 축복해 주셔서 감사합니다</div>
+    <div>윤성현, 허율</div>
+    <button class="share-btn" id="shareBtn" type="button">📤 청첩장 공유하기</button>
+    <div class="version-note">
+      신랑과 신부 모두 개발자로 일하고 있어, 저희다운 방식으로 결혼을 기념하고자 개발자 버전 청첩장을 만들어 보았습니다.<br />
+      신랑이 개발과 배포를, 신부가 기획과 QA를 맡아 함께 완성했습니다.<br />
+      재미로 준비한 페이지이니 편하게 둘러봐 주세요!
+    </div>
+    <div class="version-links">
+      <a class="version-link" href="developer.html">&lt;/&gt; 개발자 버전</a>
+      <a class="version-link" href="terminal.html">$_ 터미널 버전</a>
+    </div>
+  </footer>
+</div>
+
+
+<!-- lightbox -->
+<div class="lightbox" id="lightbox" role="dialog" aria-label="사진 크게 보기">
+  <img id="lightboxImg" src="" alt="웨딩 사진" />
+  <div class="lb-cap" id="lightboxCap"></div>
+  <button class="lb-close" id="lbClose" type="button" aria-label="닫기">✕</button>
+  <button class="lb-prev" id="lbPrev" type="button" aria-label="이전 사진">‹</button>
+  <button class="lb-next" id="lbNext" type="button" aria-label="다음 사진">›</button>
+</div>
+
+<script src="js/data.js?v=74c7a31c"></script><script src="js/config.js?v=74c7a31c"></script>
+<script src="js/private.js?v=74c7a31c"></script>
+<script src="js/main.js?v=74c7a31c"></script>
+
+<!-- 신랑과 신부 profile render. main version 전용이며 CONFIG.profile을 쓴다. -->
+<script>
+(function () {
+  var box = document.getElementById('profile');
+  // CONFIG는 config.js의 최상위 `const`다. window 속성이 아니므로 직접 참조한다.
+  if (!box || typeof CONFIG === 'undefined' || !CONFIG.profile) return;
+
+  function photoEl(p) {
+    var wrap = document.createElement('div');
+    wrap.className = 'pf-photo';
+    if (p.photo) {
+      var img = document.createElement('img');
+      img.src = photoSrc(p.photo);   // 배포별 ?v= cache busting(다른 사진과 통일)
+      img.alt = p.name || '';
+      // profile 사진은 2장뿐이라 eager로 load한다. 신랑 사진에는 아래 transform:scale이 붙는데,
+      // lazy와 transform을 함께 쓰면 첫 load(scroll 최상단)에서 load trigger를 놓쳐
+      // 새로고침 전까지 사진이 안 뜨는 문제가 있었다.
+      img.loading = 'eager';
+      img.decoding = 'async';
+      // 세로 4:5 frame으로 crop한다. 초점(object-position)은 config.photoFocus를 쓴다.
+      // 전신컷은 photoZoom(scale)으로 같은 초점을 기준 삼아 얼굴부터 상반신을 더 크게 잡는다.
+      if (p.photoFocus) img.style.objectPosition = p.photoFocus;
+      if (p.photoZoom) {
+        img.style.transform = 'scale(' + p.photoZoom + ')';
+        img.style.transformOrigin = p.photoFocus || '50% 30%';
+      }
+      img.addEventListener('error', function () {
+        wrap.classList.add('is-empty');
+        wrap.textContent = p.initial || '';   // 사진이 없으면 이니셜 원형으로 대체한다
+      });
+      wrap.appendChild(img);
+    } else {
+      wrap.classList.add('is-empty');
+      wrap.textContent = p.initial || '';
+    }
+    return wrap;
+  }
+
+  function rowEl(k, v) {
+    var row = document.createElement('div');
+    row.className = 'pf-row';
+    var ke = document.createElement('span');
+    ke.className = 'pf-k';
+    ke.textContent = k;
+    var ve = document.createElement('span');
+    ve.className = 'pf-v';
+    ve.textContent = v;
+    row.append(ke, ve);
+    return row;
+  }
+
+  function cardEl(p) {
+    var card = document.createElement('figure');
+    card.className = 'pf-card';
+    card.appendChild(photoEl(p));
+
+    var cap = document.createElement('figcaption');
+
+    var role = document.createElement('div');
+    role.className = 'pf-role';
+    role.textContent = p.role || '';
+
+    var name = document.createElement('div');
+    name.className = 'pf-name';
+    name.textContent = p.name || '';
+    cap.append(role, name);
+
+    if (p.line) {
+      var line = document.createElement('div');
+      line.className = 'pf-line';
+      line.textContent = p.line;
+      cap.appendChild(line);
+    }
+
+    var meta = document.createElement('div');
+    meta.className = 'pf-meta';
+    if (p.birth) meta.appendChild(rowEl('생일', p.birth));
+    if (p.mbti)  meta.appendChild(rowEl('MBTI', p.mbti));
+    if (p.hobby) meta.appendChild(rowEl('취미', p.hobby));
+    cap.appendChild(meta);
+
+    card.appendChild(cap);
+    return card;
+  }
+
+  // 나란한 2열 배치. heart 구분자 없이 두 card만 넣는다.
+  box.append(cardEl(CONFIG.profile.groom), cardEl(CONFIG.profile.bride));
+})();
+</script>
+</body>
+</html>
